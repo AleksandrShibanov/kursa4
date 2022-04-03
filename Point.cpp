@@ -6,30 +6,47 @@
 
 
 
-    Point::Point(double x, double y) : x(x), y(y) {}
+Point::Point(double x, double y)
+: x(x)
+, y(y) 
+{}
 
-    double Point::distance(const Point& p) const {
-        return hypot(x - p.x, y - p.y);
-    }
+double Point::distance(const Point& p) const 
+{
+    return hypot(x - p.x, y - p.y);
+}
 
-    double Point::norm() const {
-        return hypot(x, y);
-    }
+double Point::norm() const 
+{
+    return hypot(x, y);
+}
 
-    bool Point::operator ==(const Point& rhs) const {
-        return (std::fabs(x - rhs.x) < std::numeric_limits<double>::epsilon()) &&
-               (std::fabs(y - rhs.y) < std::numeric_limits<double>::epsilon());
-    }
+double Point::getAngle(const Point& lhs, const Point& rhs) const
+{
+    Point ab = { x - lhs.x, y - lhs.y };
+    Point cb = { x - rhs.x, y - rhs.y };
 
-    bool Point::operator !=(const Point& rhs) const {
-        return !(rhs == *this);
-    }
+    double dot = (ab.x * cb.x + ab.y * cb.y); // dot product
+    double cross = (ab.x * cb.y - ab.y * cb.x); // cross product
+
+    double alpha = atan2(cross, dot);
+    return alpha;
+}
 
 
-    bool Point::operator >(const Point& rhs) const {
-        return this->norm() > rhs.norm();
-    }
+bool Point::operator ==(const Point& rhs) const 
+{
+    return (std::fabs(x - rhs.x) < 1e-5) &&
+            (std::fabs(y - rhs.y) < 1e-5);
+}
 
-    bool Point::operator <(const Point& rhs) const {
-        return rhs > *this;
-    }
+bool Point::operator !=(const Point& rhs) const 
+{
+    return (std::fabs(x - rhs.x) > 1e-5) ||
+            (std::fabs(y - rhs.y) > 1e-5);
+}
+
+bool Point::operator <(const Point& rhs) const 
+{
+    return std::tie(x, y) < std::tie(rhs.x, rhs.y);
+}

@@ -17,9 +17,6 @@ struct Triangle {
 
     Triangle(const Point& A, const Point& B, const Point& C);
 
-
-    double area() const;
-
     bool hasCommonEdge(const Triangle &triangle) const;
 
     bool hasCommonPoint(const Triangle &triangle) const;
@@ -49,10 +46,6 @@ struct Triangle {
     bool operator ==(const Triangle& rhs) const ;
 
     bool operator !=(const Triangle& rhs) const;
-
-    bool operator <(const Triangle& rhs) const ;
-
-    bool operator >(const Triangle& rhs) const ;
 
     bool containsEdge(const Edge &edge) const;
 };

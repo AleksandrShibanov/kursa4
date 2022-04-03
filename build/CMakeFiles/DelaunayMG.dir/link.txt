@@ -1,0 +1,1 @@
+/usr/bin/clang++  -g   CMakeFiles/DelaunayMG.dir/main.cpp.o CMakeFiles/DelaunayMG.dir/incremental.cpp.o CMakeFiles/DelaunayMG.dir/Edge.cpp.o CMakeFiles/DelaunayMG.dir/triangle.cpp.o CMakeFiles/DelaunayMG.dir/Point.cpp.o  -o DelaunayMG  -lsfml-graphics -lsfml-window -lsfml-system -lboost_system -lboost_thread -lpthread 

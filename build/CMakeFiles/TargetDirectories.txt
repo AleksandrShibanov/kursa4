@@ -1,0 +1,3 @@
+/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles/rebuild_cache.dir
+/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles/edit_cache.dir
+/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles/DelaunayMG.dir

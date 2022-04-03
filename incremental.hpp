@@ -24,4 +24,4 @@ struct Incremental {
     std::vector<Triangle> triangulate(std::vector<Triangle>& triangles);
     std::vector<Triangle> triangulate(Point& p, std::vector<Triangle>& triangles);
 
-    };
+};

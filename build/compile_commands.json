@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
+  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/..  -g   -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/main.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/main.cpp",
+  "file": "/home/aleksandr/CLionProjects/DelaunayMG/main.cpp"
+},
+{
+  "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
+  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/..  -g   -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/incremental.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/incremental.cpp",
+  "file": "/home/aleksandr/CLionProjects/DelaunayMG/incremental.cpp"
+},
+{
+  "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
+  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/..  -g   -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/Edge.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/Edge.cpp",
+  "file": "/home/aleksandr/CLionProjects/DelaunayMG/Edge.cpp"
+},
+{
+  "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
+  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/..  -g   -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/triangle.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/triangle.cpp",
+  "file": "/home/aleksandr/CLionProjects/DelaunayMG/triangle.cpp"
+},
+{
+  "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
+  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/..  -g   -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/Point.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/Point.cpp",
+  "file": "/home/aleksandr/CLionProjects/DelaunayMG/Point.cpp"
+}
+]
