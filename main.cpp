@@ -94,43 +94,6 @@ int main() {
     std::vector<Edge> edges;
     sRightZone += sLeftZone;
 
-    // auto sLR_Edge = sLeftZone.getBottomEdge(sRightZone);
-    // auto sLeftBestCandidate = sLeftZone.getBestCandidate(sLR_Edge, true);
-    // auto sRightBestCandidate = sRightZone.getBestCandidate(sLR_Edge, false);
-
-    // while (sLeftBestCandidate.has_value() || sRightBestCandidate.has_value())
-    // {
-    //     const auto& [sLeftPointOfLR_Edge, sRightPointOfLR_Edge] = sLR_Edge.getPointsOrderedByX();
-
-    //     if (sLeftBestCandidate.has_value() && !sRightBestCandidate.has_value())
-    //     {
-    //         sMergeZone.emplace(Triangle(sLeftBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
-    //         sLR_Edge = Edge(sLeftBestCandidate.value(), sRightPointOfLR_Edge);
-    //     }
-    //     else if (!sLeftBestCandidate.has_value() && sRightBestCandidate.has_value())
-    //     {
-    //         sMergeZone.emplace(Triangle(sRightBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
-    //         sLR_Edge = Edge(sLeftPointOfLR_Edge, sRightBestCandidate.value());
-    //     }
-    //     else 
-    //     {
-    //         const auto& sLeftTriangle = Triangle(sLeftBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge);
-    //         if (sLeftTriangle.circumscribedCircleContains(sRightBestCandidate.value()))
-    //         {
-    //             sMergeZone.emplace(Triangle(sRightBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
-    //             sLR_Edge = Edge(sLeftPointOfLR_Edge, sRightBestCandidate.value());
-    //         }
-    //         else
-    //         {
-    //             sMergeZone.emplace(Triangle(sLeftBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
-    //             sLR_Edge = Edge(sLeftBestCandidate.value(), sRightPointOfLR_Edge);
-    //         }
-    //     }
-        
-    //     sLeftBestCandidate = sLeftZone.getBestCandidate(sLR_Edge, true);
-    //     sRightBestCandidate = sRightZone.getBestCandidate(sLR_Edge, false);
-    // }
-
     edges.insert(edges.end(), sRightZone.edges.begin(), sRightZone.edges.end());
 
 
@@ -151,37 +114,6 @@ int main() {
         // clear the window with black color
         sf::Color darkGreyGreen(10, 30, 10, 255);
         window.clear(darkGreyGreen);
-
-        // if (sBottomEdge.has_value())
-        // {
-        //     sf::Vertex sBottom[] =
-        //     {
-        //             sf::Vertex(sf::Vector2f(sBottomEdge.value().p1.x, sBottomEdge.value().p1.y)),
-        //             sf::Vertex(sf::Vector2f(sBottomEdge.value().p2.x, sBottomEdge.value().p2.y)),
-        //     };
-
-        //     window.draw(sBottom, 2, sf::Lines);
-        // }
-
-
-        // if (sLeftBestCandidate.has_value())
-        // {
-        //     sf::CircleShape circle(5);
-        //     circle.setPosition(sLeftBestCandidate.value().x, sLeftBestCandidate.value().y);
-        //     circle.setFillColor(sf::Color::Red);
-
-        //     window.draw(circle);
-        // }
-
-        // if (sRightBestCandidate.has_value())
-        // {
-        //     sf::CircleShape circle(5);
-        //     circle.setPosition(sRightBestCandidate.value().x, sRightBestCandidate.value().y);
-        //     circle.setFillColor(sf::Color::Red);
-
-        //     window.draw(circle);
-        // }
-
 
         for (const auto& sEdge: edges) 
         {
