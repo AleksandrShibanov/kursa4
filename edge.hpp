@@ -34,6 +34,9 @@ struct Edge
     Point getCommonPoint(const Edge& edge) const;
     Point getNotCommonPoint(const Edge& edge) const;
 
+    std::pair<Point, Point> getPointsOrderedByX() const;
+    std::pair<Point, Point> getPointsOrderedByY() const;
+
     double clockwiseAngle(const Edge& aEdge) const;
 
     bool isIntersects(const Edge& aEdge, Point& aIntersectionPoint) const;

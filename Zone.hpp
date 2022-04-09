@@ -29,11 +29,8 @@ struct Zone
         return *std::min_element(points.begin(), points.end(), aFunc);
     }
 
-    std::optional<Edge> getBottomEdge(const Zone& aZone)
+    Edge getBottomEdge(const Zone& aZone)
     {
-        if (points.empty() || aZone.points.empty())
-            return std::nullopt;
-
         auto sGetSortedOtherWay = [](std::set<Point>::const_iterator cbegin, std::set<Point>::const_iterator cend)
         { 
             std::vector<Point> sPoints(cbegin, cend);
@@ -87,10 +84,24 @@ struct Zone
             if (sNeedToContinue)  // выглядит нелепо, нужно придумать как сделать иначе континью внешнего цикла. Ну не исключение же кидать
                 continue;
 
-            return sBottomEdge;  // нашли самый нижний отрезок соединяющий две зоны и не пересекающий их
+            break;  // нашли самый нижний отрезок соединяющий две зоны и не пересекающий их
         }
 
-        return std::nullopt;
+        return sBottomEdge;
+    }
+
+    bool isLeft(const Zone& aZone)  // наша зона левее чем переданная
+    {
+        if (empty() || aZone.empty())
+            return true;
+        
+        const auto& sOwnPoint = *points.cbegin();
+        const auto& sOtherZonePoint = *aZone.points.cbegin();
+        
+        if (sOwnPoint.x < sOtherZonePoint.x)
+            return true;
+        else
+            return false;
     }
 
     // слева нам нужно считать /_ угол, а справа _\, поэтому без параметра указывающего какая зона относительно соединения рассматривается увы не обойтись
@@ -168,6 +179,47 @@ struct Zone
         points.insert(aPoint);
     }
 
+    void emplace(const Edge& aEdge)
+    {
+        emplace(aEdge.p1);
+        emplace(aEdge.p2);
+
+        edges.insert(aEdge);
+    }
+
+    void emplace(const Triangle& aTriangle)
+    {
+        for (const auto& sEdge: aTriangle.edges)
+        {
+            emplace(sEdge);
+        }
+
+        triangles.emplace_back(aTriangle);
+    }
+
+    bool empty() const
+    {
+        return points.empty();
+    }
+
+    void clear()
+    {
+        triangles.clear();
+        edges.clear();
+        points.clear();
+    }
+
+    void devour(Zone& aZone)
+    {
+        for (const auto& sTriangle: aZone.triangles)
+        {
+            emplace(sTriangle);
+        }
+
+        aZone.clear();
+    }
+
+
     void triangulate()
     {
         std::vector<Point> sPoints(points.cbegin(), points.cend());
@@ -178,6 +230,75 @@ struct Zone
         {
             edges.insert(sTriangle.edges.begin(), sTriangle.edges.end());
         }
+    }
+
+    void operator +=(Zone& aZone)
+    {
+        merge(aZone);
+    }
+
+    void operator |=(Zone& aZone)
+    {
+        merge(aZone);
+    }
+
+    void merge(Zone& aZone)
+    {
+        if (isLeft(aZone))
+        {
+            mergeImpl(aZone);
+            return;
+        }
+
+        aZone.mergeImpl(*this);
+        devour(aZone);
+    }
+
+    private:
+
+    void mergeImpl(Zone& aZone)  // здесь this должен быть левее чем переданная зона
+    {
+        Zone sMergeZone;
+
+        auto sLR_Edge = getBottomEdge(aZone);
+        auto sLeftBestCandidate = getBestCandidate(sLR_Edge, true);
+        auto sRightBestCandidate = aZone.getBestCandidate(sLR_Edge, false);
+
+        while (sLeftBestCandidate.has_value() || sRightBestCandidate.has_value())
+        {
+            const auto& [sLeftPointOfLR_Edge, sRightPointOfLR_Edge] = sLR_Edge.getPointsOrderedByX();
+
+            if (sLeftBestCandidate.has_value() && !sRightBestCandidate.has_value())
+            {
+                sMergeZone.emplace(Triangle(sLeftBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
+                sLR_Edge = Edge(sLeftBestCandidate.value(), sRightPointOfLR_Edge);
+            }
+            else if (!sLeftBestCandidate.has_value() && sRightBestCandidate.has_value())
+            {
+                sMergeZone.emplace(Triangle(sRightBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
+                sLR_Edge = Edge(sLeftPointOfLR_Edge, sRightBestCandidate.value());
+            }
+            else 
+            {
+                const auto& sLeftTriangle = Triangle(sLeftBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge);
+                if (sLeftTriangle.circumscribedCircleContains(sRightBestCandidate.value()))
+                {
+                    sMergeZone.emplace(Triangle(sRightBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
+                    sLR_Edge = Edge(sLeftPointOfLR_Edge, sRightBestCandidate.value());
+                }
+                else
+                {
+                    sMergeZone.emplace(Triangle(sLeftBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
+                    sLR_Edge = Edge(sLeftBestCandidate.value(), sRightPointOfLR_Edge);
+                }
+            }
+            
+            sLeftBestCandidate = getBestCandidate(sLR_Edge, true);
+            sRightBestCandidate = aZone.getBestCandidate(sLR_Edge, false);
+        }
+
+        devour(aZone);
+        devour(sMergeZone);
     }
 
 };

@@ -36,14 +36,13 @@ double Point::getAngle(const Point& lhs, const Point& rhs) const
 
 bool Point::operator ==(const Point& rhs) const 
 {
-    return (std::fabs(x - rhs.x) < 1e-5) &&
-            (std::fabs(y - rhs.y) < 1e-5);
+    return (std::fabs(x - rhs.x) < 100 * __DBL_EPSILON__) &&
+            (std::fabs(y - rhs.y) < 100 * __DBL_EPSILON__);
 }
 
 bool Point::operator !=(const Point& rhs) const 
 {
-    return (std::fabs(x - rhs.x) > 1e-5) ||
-            (std::fabs(y - rhs.y) > 1e-5);
+    return !(*this == rhs);
 }
 
 bool Point::operator <(const Point& rhs) const 

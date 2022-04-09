@@ -72,6 +72,22 @@ Point Edge::getNotCommonPoint(const Edge& edge) const
     return p1;
 }
 
+std::pair<Point, Point> Edge::getPointsOrderedByX() const
+{
+    if (p1.x < p2.x)
+        return std::make_pair(p1, p2);
+    else 
+        return std::make_pair(p2, p1);
+}
+
+std::pair<Point, Point> Edge::getPointsOrderedByY() const
+{
+    if (p1.y < p2.y)
+        return std::make_pair(p1, p2);
+    else 
+        return std::make_pair(p2, p1);
+}
+
 bool Edge::operator==(const Edge& rhs) const 
 {
     return (p1 == rhs.p1 && p2 == rhs.p2) || (p1 == rhs.p2 && p2 == rhs.p1);
