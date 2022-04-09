@@ -63,7 +63,6 @@ struct Zone
         aZone.clear();
     }
 
-
     void triangulate()
     {
         std::vector<Point> sPoints(points.cbegin(), points.cend());
