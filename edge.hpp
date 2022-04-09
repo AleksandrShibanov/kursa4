@@ -4,6 +4,7 @@
 #include <ostream>
 #include <vector>
 #include <boost/functional/hash.hpp>
+#include <optional>
 
 #include "point.hpp"
 
@@ -39,7 +40,7 @@ struct Edge
 
     double clockwiseAngle(const Edge& aEdge) const;
 
-    bool isIntersects(const Edge& aEdge, Point& aIntersectionPoint) const;
+    std::optional<Point> isIntersects(const Edge& aEdge) const;
 
     bool operator ==(const Edge& rhs) const;
 

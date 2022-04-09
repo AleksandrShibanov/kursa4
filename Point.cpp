@@ -1,9 +1,7 @@
 #include "point.hpp"
 
 #include <cmath>
-#include <ostream>
-#include <vector>
-
+#include <tuple>
 
 
 Point::Point(double x, double y)

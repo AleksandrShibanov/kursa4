@@ -1,13 +1,8 @@
 #include "triangle.hpp"
 
 #include <cmath>
-#include <ostream>
-#include <vector>
-#include <limits>
 #include "point.hpp"
 #include "edge.hpp"
-
-
 
 Triangle::Triangle(const Point& A, const Point& B, const Point& C) : A(A), B(B), C(C) {
     edges.clear();
@@ -32,43 +27,6 @@ bool Triangle::hasCommonPoint(const Triangle &triangle) const
             if (edge1.p1 == edge2.p1 || edge1.p2 == edge2.p2)
                 return true;
     return false;
-}
-
-double Triangle::ABC() const 
-{
-    Edge AB{A, B};
-    Edge BC{B, C};
-    return AB.degree(BC);
-}
-
-double Triangle::BCA() const 
-{
-    Edge BC{B, C};
-    Edge CA{C, A};
-    return BC.degree(CA);
-}
-
-double Triangle::CAB() const 
-{
-    Edge CA{C, A};
-    Edge AB{A, B};
-    return AB.degree(CA);
-}
-
-double Triangle::max_alpha() const 
-{
-    return std::max(CAB(), std::max(ABC(), BCA()));
-}
-
-bool Triangle::isValidTriangulation(const Triangle& triangle) const 
-{
-    if (*this != triangle && hasCommonEdge(triangle)) 
-    {
-        double sum = max_alpha() + triangle.max_alpha();
-        return sum < 180;
-    } 
-    else
-        return false;
 }
 
 void Triangle::MakeBad() 
@@ -113,20 +71,6 @@ bool Triangle::containsPoint(const Point& v) const
 bool Triangle::containsEdge(const Edge& edge) const 
 {
     return edges[0] == edge || edges[1] == edge || edges[2] == edge;
-}
-
-void Triangle::flip(Triangle& triangle) 
-{
-    for (const auto& edge1 : edges) 
-        for (const auto& edge2 : triangle.edges) 
-            if (edge1 == edge2) 
-            {
-                const auto& a = getPoint(edge1);
-                const auto& tr_a = triangle.getPoint(edge2);
-
-                *this = Triangle(a, edge1.p1, tr_a);
-                triangle = Triangle(tr_a, edge1.p2, a);
-            }
 }
 
 bool Triangle::circumscribedCircleContains(const Point& D) const 

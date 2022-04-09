@@ -1,15 +1,10 @@
 #pragma once
 
-#include <cmath>
 #include <ostream>
-#include <vector>
-
-#include <SFML/Graphics.hpp>
 
 struct Point {
     double x;
     double y;
-    mutable sf::Color color = sf::Color::White;
 
     Point(double x = 0, double y = 0);
 

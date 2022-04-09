@@ -1,14 +1,9 @@
 #include <iostream>
-#include <set>
-#include <cmath>
-#include <limits>
 #include <random>
 #include <SFML/Graphics.hpp>
-#include <boost/thread.hpp>
-#include <future>
-#include <stack>
-#include <queue>
 #include <fstream>
+#include <omp.h>
+#include <chrono>
 
 #include "edge.hpp"
 #include "point.hpp"
@@ -16,14 +11,9 @@
 #include "incremental.hpp"
 #include "Zone.hpp"
 
-double determinant(  Point& a,   Point& b,   Point& c,   Point& d) {
-    return (a.x - d.x) * (b.y - d.y) * (std::pow(c.x - d.x,2) + std::pow(c.y - d.y,2)) +
-           (b.x - d.x) * (c.y - d.y) * (std::pow(a.x - d.x,2) + std::pow(a.y - d.y,2)) +
-           (c.x - d.x) * (a.y - d.y) * (std::pow(b.x - d.x,2) + std::pow(b.y - d.y,2)) -
-           (c.x - d.x) * (b.y - d.y) * (std::pow(a.x - d.x,2) + std::pow(a.y - d.y,2)) -
-           (a.x - d.x) * (c.y - d.y) * (std::pow(b.x - d.x,2) + std::pow(b.y - d.y,2)) -
-           (b.x - d.x) * (a.y - d.y) * (std::pow(c.x - d.x,2) + std::pow(c.y - d.y,2));
-}
+constexpr double HEIGHT = 900.0;
+constexpr double WIDTH = 1600.0;
+constexpr uint8_t gNumberOfThreads = 4;
 
 void writeDump(const std::set<Point>& aPoints)
 {
@@ -57,19 +47,18 @@ void readDump(std::set<Point>& aPoints)
 }
 
 int main() {
+
+    omp_set_num_threads(gNumberOfThreads);
+
     std::random_device rd;
-    std::mt19937 gen_for_int(rd());
     std::mt19937 gen_for_double(rd());
-    std::uniform_int_distribution<> int_gen(10, 100);
-    std::uniform_real_distribution<> height_gen(1.0, 900.0);
-    std::uniform_real_distribution<> width_gen(1.0, 1600.0);
+    std::uniform_real_distribution<> height_gen(1.0, HEIGHT);
+    std::uniform_real_distribution<> width_gen(1.0, WIDTH);
 
-    constexpr size_t N = 500;  // number of points
-    constexpr size_t n = 4;  // average number of points in cell
-
-    Zone sLeftZone, sRightZone;
     std::set<Point> sPoints;
     // readDump(sPoints);
+
+    constexpr size_t N = 5000;  // number of points
 
     for (int i = 0; i < N; ++i)
     {
@@ -78,59 +67,68 @@ int main() {
         sPoints.insert(Point(sPointWidth, sPointHeigth));
     }
 
-    for (const auto& sPoint: sPoints)
-    {
-        if (sPoint.x < 800)
-            sLeftZone.emplace(Point(sPoint.x, sPoint.y));
-        else
-            sRightZone.emplace(Point(sPoint.x, sPoint.y));
-    }
-
     // writeDump(sPoints);
 
-    sLeftZone.triangulate();
-    sRightZone.triangulate();
+    constexpr size_t sZonesCount = 16;  // number of parallel calculated triangulation 'bricks'
+    std::array<Zone, sZonesCount> sZones;
+    size_t sIndex = 0;
+    for (const auto& sPoint: sPoints)
+    {
+        if (WIDTH / sZonesCount * (sIndex + 1) < sPoint.x)
+            sIndex++;
 
-    std::vector<Edge> edges;
-    sRightZone += sLeftZone;
+        sZones[sIndex].emplace(sPoint);
+    }
 
-    edges.insert(edges.end(), sRightZone.edges.begin(), sRightZone.edges.end());
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
+    #pragma omp parallel for
+    for (auto& sZone: sZones)
+    {
+        sZone.triangulate();
+    }
+    
+    size_t sCurrentCounter = 1;
+    for (size_t i = 0; i < std::log2(sZonesCount); ++i)
+    {
+        std::cout << "ITER " << i << std::endl;
+        #pragma omp parallel for
+        for (size_t j = 0; j < sZonesCount; j += sCurrentCounter * 2)
+        {
+            sZones[j] |= sZones[j + sCurrentCounter];
+        }
+        sCurrentCounter *= 2;
+    }
 
-    // create the window
-    sf::RenderWindow window(sf::VideoMode(1600, 900), "My window");
-    // run the program as long as the window is open
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[µs]" << std::endl;
+    // std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
+
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Awesome Delaunay Parallel Triangulation");
     while (window.isOpen())
     {
-        // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
         while (window.pollEvent(event))
         {
-            // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
-        // clear the window with black color
         sf::Color darkGreyGreen(10, 30, 10, 255);
         window.clear(darkGreyGreen);
 
-        for (const auto& sEdge: edges) 
+        for (const auto& sEdge: sZones[0].edges) 
         {
             sf::Vertex line[] =
             {
-                    sf::Vertex(sf::Vector2f(sEdge.p1.x, sEdge.p1.y), sEdge.p1.color),
-                    sf::Vertex(sf::Vector2f(sEdge.p2.x, sEdge.p2.y), sEdge.p2.color),
+                    sf::Vertex(sf::Vector2f(sEdge.p1.x, sEdge.p1.y)),
+                    sf::Vertex(sf::Vector2f(sEdge.p2.x, sEdge.p2.y)),
             };
             window.draw(line, 2, sf::Lines);
         }
 
-
-        // end the current frame
         window.display();
     }
 
     return 0;
-
-
 }

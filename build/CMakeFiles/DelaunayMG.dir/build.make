@@ -139,6 +139,8 @@ DelaunayMG: CMakeFiles/DelaunayMG.dir/Edge.cpp.o
 DelaunayMG: CMakeFiles/DelaunayMG.dir/triangle.cpp.o
 DelaunayMG: CMakeFiles/DelaunayMG.dir/Point.cpp.o
 DelaunayMG: CMakeFiles/DelaunayMG.dir/build.make
+DelaunayMG: /usr/lib/llvm-10/lib/libomp.so
+DelaunayMG: /usr/lib/x86_64-linux-gnu/libpthread.so
 DelaunayMG: CMakeFiles/DelaunayMG.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable DelaunayMG"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/DelaunayMG.dir/link.txt --verbose=$(VERBOSE)
