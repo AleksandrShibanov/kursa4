@@ -54,15 +54,15 @@ struct Zone
             sBottomEdge = Edge(*sOwnCandidateIt, *sOtherCandidateIt);
             bool sNeedToContinue = false;
 
-            std::cout << sOwnCandidateIt->x << " " << sOwnCandidateIt->y << std::endl;
-            std::cout << sOtherCandidateIt->x << " " << sOtherCandidateIt->y << std::endl;
+            // std::cout << sOwnCandidateIt->x << " " << sOwnCandidateIt->y << std::endl;
+            // std::cout << sOtherCandidateIt->x << " " << sOtherCandidateIt->y << std::endl;
 
             for (const auto& sEdge: edges)
             {
                 Point sIntersectionPoint;
                 if (sBottomEdge.isIntersects(sEdge, sIntersectionPoint) && sIntersectionPoint != *sOwnCandidateIt)
                 {
-                    std::cout << "INTERSECTION LEFT " << sIntersectionPoint.x << " " << sIntersectionPoint.y << std::endl;
+                    // std::cout << "INTERSECTION LEFT " << sIntersectionPoint.x << " " << sIntersectionPoint.y << std::endl;
                     sOwnCandidateIt++;
                     sNeedToContinue = true;  // нужно вернуться континьюить вайл
                     break;
@@ -77,7 +77,7 @@ struct Zone
                 Point sIntersectionPoint;
                 if (sBottomEdge.isIntersects(sEdge, sIntersectionPoint) && sIntersectionPoint != *sOtherCandidateIt)
                 {
-                    std::cout << "INTERSECTION RIGHT " << sIntersectionPoint.x << " " << sIntersectionPoint.y << std::endl;
+                    // std::cout << "INTERSECTION RIGHT " << sIntersectionPoint.x << " " << sIntersectionPoint.y << std::endl;
                     sOtherCandidateIt++;
                     sNeedToContinue = true;  // нужно вернуться континьюить вайл
                     break;
@@ -87,16 +87,14 @@ struct Zone
             if (sNeedToContinue)  // выглядит нелепо, нужно придумать как сделать иначе континью внешнего цикла. Ну не исключение же кидать
                 continue;
 
-            std::cout << "FOUND" << std::endl;
-
             return sBottomEdge;  // нашли самый нижний отрезок соединяющий две зоны и не пересекающий их
         }
 
         return std::nullopt;
     }
 
-
-    std::optional<Point> getBestCandidate(const Edge& aEdge)
+    // слева нам нужно считать /_ угол, а справа _\, поэтому без параметра указывающего какая зона относительно соединения рассматривается увы не обойтись
+    std::optional<Point> getBestCandidate(const Edge& aEdge, bool aIsLeftZone)  
     {
         std::vector<Edge> sEdges;
         std::copy_if(edges.begin(), edges.end(), std::back_inserter(sEdges), [aEdge](const Edge& e) { return e.hasCommonPoint(aEdge); });
@@ -113,24 +111,38 @@ struct Zone
         if (sPoints.size() == 1)
             return *sPoints.begin();
  
-        std::sort(sPoints.begin(), sPoints.end(), [sCommonPoint, sNotFromZonePoint](const Point& p1, const Point& p2) {
+        std::sort(sPoints.begin(), sPoints.end(), [sCommonPoint, sNotFromZonePoint, aIsLeftZone](const Point& p1, const Point& p2) {
             const auto& sInnerEdge1 = Edge(sCommonPoint, p1);
             const auto& sInnerEdge2 = Edge(sCommonPoint, p2);
             const auto& sOuterEdge = Edge(sNotFromZonePoint, sCommonPoint);
-            return sOuterEdge.clockwiseAngle(sInnerEdge1) < sOuterEdge.clockwiseAngle(sInnerEdge2);
+            if (aIsLeftZone)
+                return sOuterEdge.clockwiseAngle(sInnerEdge1) > sOuterEdge.clockwiseAngle(sInnerEdge2);
+            else
+                return sOuterEdge.clockwiseAngle(sInnerEdge1) < sOuterEdge.clockwiseAngle(sInnerEdge2);
         });
 
-        std::erase_if(sPoints, [sCommonPoint, sNotFromZonePoint](const Point& p) {
-            const auto& sTr1 = Triangle(sNotFromZonePoint, sCommonPoint, p);
-            return sTr1.ABC() > 180 || sTr1.ABC() < 0;
+        std::erase_if(sPoints, [sCommonPoint, sNotFromZonePoint, aIsLeftZone](const Point& p) {
+            const auto& sOuterEdge = Edge(sCommonPoint, sNotFromZonePoint);
+            const auto& sInnerEdge = Edge(sCommonPoint, p);
+            // const auto& sTr1 = Triangle(sNotFromZonePoint, sCommonPoint, p);
+            double sAngle = 0.0;
+            if (aIsLeftZone)
+                sAngle = sInnerEdge.clockwiseAngle(sOuterEdge);
+            else
+                sAngle = sOuterEdge.clockwiseAngle(sInnerEdge);
+            // std::cout << sAngle << std::endl;
+            return sAngle < 0;
         });
 
-        for (auto sPoint: sPoints)
-        {
-            const auto& sTr1 = Triangle(sNotFromZonePoint, sCommonPoint, sPoint);
-            std::cout << sPoint << std::endl;
-            std::cout << sTr1.ABC() << std::endl;
-        }
+        if (sPoints.empty())
+            return std::nullopt;
+
+        // for (auto sPoint: sPoints)
+        // {
+        //     const auto& sTr1 = Triangle(sNotFromZonePoint, sCommonPoint, sPoint);
+        //     std::cout << sPoint << std::endl;
+        //     std::cout << sTr1.ABC() << std::endl;
+        // }
 
         auto sCurrentBestCandidateIt = sPoints.cbegin();
         for (auto it = std::next(sCurrentBestCandidateIt); it != sPoints.cend(); ++it)
@@ -139,30 +151,9 @@ struct Zone
             if (sCheckTriangle.circumscribedCircleContains(*it))
             {
                 const auto& sEdgeToDelete = Edge(sCommonPoint, *sCurrentBestCandidateIt);
-
-                for (auto& sEdge: edges)
-                {
-                    if (sEdge == sEdgeToDelete)
-                    {
-                         sEdge.p1.color = sf::Color::Red;
-                         sEdge.p2.color = sf::Color::Red;
-                    }
-                }
-
-                for (auto& sTriangle: triangles)
-                {
-                    if (sTriangle.containsEdge(sEdgeToDelete)) 
-                    {
-                        for (auto& sEdge: sTriangle.edges) 
-                        {
-                            sEdge.p1.color = sf::Color::Red; 
-                            sEdge.p2.color = sf::Color::Red;
-                        }
-                    }
-                }
-
                 edges.erase(sEdgeToDelete);
                 std::erase_if(triangles, [sEdgeToDelete](const auto& sTriangle) { return sTriangle.containsEdge(sEdgeToDelete); });
+                
                 sCurrentBestCandidateIt = it;
             }
             else 
@@ -188,4 +179,5 @@ struct Zone
             edges.insert(sTriangle.edges.begin(), sTriangle.edges.end());
         }
     }
+
 };

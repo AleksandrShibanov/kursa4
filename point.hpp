@@ -27,7 +27,7 @@ struct Point {
 
     friend std::ostream& operator<<(std::ostream &os, const Point& sPoint)
     {
-        os << "X: " << sPoint.x << " Y: " << sPoint.y << std::endl;
+        os << sPoint.x << " " << sPoint.y;
         return os;
     }
 };
