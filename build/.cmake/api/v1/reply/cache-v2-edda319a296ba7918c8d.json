@@ -1146,6 +1146,18 @@
 			"value" : "/home/aleksandr/CLionProjects/DelaunayMG"
 		},
 		{
+			"name" : "Eigen3_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "The directory containing a CMake configuration file for Eigen3."
+				}
+			],
+			"type" : "PATH",
+			"value" : "/usr/lib/cmake/eigen3"
+		},
+		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_OpenMP",
 			"properties" : 
 			[
@@ -1155,7 +1167,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "[TRUE][TRUE][c ][v4.5()]"
+			"value" : "[TRUE][TRUE][c ][v()]"
 		},
 		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_C",
@@ -1167,7 +1179,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "[-fopenmp=libomp][/usr/lib/llvm-10/lib/libomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v4.5()]"
+			"value" : "[-fopenmp=libomp][/usr/lib/llvm-10/lib/libomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v()]"
 		},
 		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_CXX",
@@ -1179,7 +1191,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "[-fopenmp=libomp][/usr/lib/llvm-10/lib/libomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v4.5()]"
+			"value" : "[-fopenmp=libomp][/usr/lib/llvm-10/lib/libomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v()]"
 		},
 		{
 			"name" : "OpenMP_COMPILE_RESULT_CXX_fopenmplibomp",

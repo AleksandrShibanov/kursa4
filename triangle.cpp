@@ -1,10 +1,9 @@
 #include "triangle.hpp"
 
 #include <cmath>
-#include "point.hpp"
 #include "edge.hpp"
 
-Triangle::Triangle(const Point& A, const Point& B, const Point& C) : A(A), B(B), C(C) {
+Triangle::Triangle(const Eigen::Vector2f& A, const Eigen::Vector2f& B, const Eigen::Vector2f& C) : A(A), B(B), C(C) {
     edges.clear();
     edges.push_back({A, B});
     edges.push_back({B, C});
@@ -44,26 +43,26 @@ bool Triangle::isBad()
     return bad;
 }
 
-Point Triangle::getPoint(const Edge& edge) 
-{
-    const auto& a = edge.p1;
-    const auto& b = edge.p2;
+// Eigen::Vector2f Triangle::getPoint(const Edge& edge) 
+// {
+//     const auto& a = edge.p1;
+//     const auto& b = edge.p2;
 
-    if (A == a && B == b)
-        return C;
-    if (B == a && A == b)
-        return C;
-    if (B == a && C == b)
-        return A;
-    if (C == a && B == b)
-        return A;
-    if (C == a && A == b)
-        return B;
-    if (A == a && C == b)
-        return B;
-}
+//     if (A == a && B == b)
+//         return C;
+//     if (B == a && A == b)
+//         return C;
+//     if (B == a && C == b)
+//         return A;
+//     if (C == a && B == b)
+//         return A;
+//     if (C == a && A == b)
+//         return B;
+//     if (A == a && C == b)
+//         return B;
+// }
 
-bool Triangle::containsPoint(const Point& v) const 
+bool Triangle::containsPoint(const Eigen::Vector2f& v) const 
 {
     return v == A || v == B || v == C;
 }
@@ -73,18 +72,18 @@ bool Triangle::containsEdge(const Edge& edge) const
     return edges[0] == edge || edges[1] == edge || edges[2] == edge;
 }
 
-bool Triangle::circumscribedCircleContains(const Point& D) const 
+bool Triangle::circumscribedCircleContains(const Eigen::Vector2f& D) const 
 {
-    const double ab = this->A.norm() * this->A.norm();
-    const double cd = this->B.norm() * this->B.norm();
-    const double ef = this->C.norm() * this->C.norm();
+    const double ab = hypot(this->A.x(), this->A.y()) * hypot(this->A.x(), this->A.y());
+    const double cd = hypot(this->B.x(), this->B.y()) * hypot(this->B.x(), this->B.y());
+    const double ef = hypot(this->C.x(), this->C.y()) * hypot(this->C.x(), this->C.y());
 
-    const double ax = this->A.x;
-    const double ay = this->A.y;
-    const double bx = this->B.x;
-    const double by = this->B.y;
-    const double cx = this->C.x;
-    const double cy = this->C.y;
+    const double ax = this->A.x();
+    const double ay = this->A.y();
+    const double bx = this->B.x();
+    const double by = this->B.y();
+    const double cx = this->C.x();
+    const double cy = this->C.y();
 
     const double circumX = (ab * (cy - by) + cd * (ay - cy) + ef * (by - ay)) /
                             (ax * (cy - by) + bx * (ay - cy) + cx * (by - ay));
@@ -92,8 +91,10 @@ bool Triangle::circumscribedCircleContains(const Point& D) const
     const double circumY = (ab * (cx - bx) + cd * (ax - cx) + ef * (bx - ax)) /
                             (ay * (cx - bx) + by * (ax - cx) + cy * (bx - ax));
 
-    const Point circum(circumX / 2, circumY / 2);
-    return D.distance(circum) * D.distance(circum) <= A.distance(circum) * A.distance(circum);
+    const Eigen::Vector2f circum(circumX / 2, circumY / 2);
+    return hypot(D.x() - circum.x(), D.y() - circum.y()) * hypot(D.x() - circum.x(), D.y() - circum.y())
+           <= 
+           hypot(A.x() - circum.x(), A.y() - circum.y()) * hypot(A.x() - circum.x(), A.y() - circum.y());
 }
 
 bool Triangle::operator ==(const Triangle& rhs) const 

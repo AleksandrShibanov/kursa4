@@ -210,6 +210,9 @@ DelaunayMG_BINARY_DIR:STATIC=/home/aleksandr/CLionProjects/DelaunayMG/build
 //Value Computed by CMake
 DelaunayMG_SOURCE_DIR:STATIC=/home/aleksandr/CLionProjects/DelaunayMG
 
+//The directory containing a CMake configuration file for Eigen3.
+Eigen3_DIR:PATH=/usr/lib/cmake/eigen3
+
 //CXX compiler flags for OpenMP parallelization
 OpenMP_CXX_FLAGS:STRING=-fopenmp=libomp
 
@@ -377,11 +380,11 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding OpenMP
-FIND_PACKAGE_MESSAGE_DETAILS_OpenMP:INTERNAL=[TRUE][TRUE][c ][v4.5()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP:INTERNAL=[TRUE][TRUE][c ][v()]
 //Details about finding OpenMP_C
-FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_C:INTERNAL=[-fopenmp=libomp][/usr/lib/llvm-10/lib/libomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v4.5()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_C:INTERNAL=[-fopenmp=libomp][/usr/lib/llvm-10/lib/libomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v()]
 //Details about finding OpenMP_CXX
-FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_CXX:INTERNAL=[-fopenmp=libomp][/usr/lib/llvm-10/lib/libomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v4.5()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_CXX:INTERNAL=[-fopenmp=libomp][/usr/lib/llvm-10/lib/libomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v()]
 //Result of TRY_COMPILE
 OpenMP_COMPILE_RESULT_CXX_fopenmplibomp:INTERNAL=TRUE
 //Result of TRY_COMPILE

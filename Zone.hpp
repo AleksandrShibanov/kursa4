@@ -5,20 +5,21 @@
 #include <optional>
 #include <unordered_set>
 #include <set>
+#include <Eigen/Dense>
 
-#include "point.hpp"
 #include "triangle.hpp"
 #include "edge.hpp"
 #include "incremental.hpp"
+#include "utils.hpp"
 
 
 struct Zone
 {
-    std::set<Point> points;
+    std::set<Eigen::Vector2f, vecCompare> points;
     std::unordered_set<Edge, MyHash<Edge>> edges;
     std::vector<Triangle> triangles;
 
-    void emplace(const Point& aPoint)
+    void emplace(const Eigen::Vector2f& aPoint)
     {
         points.insert(aPoint);
     }
@@ -65,7 +66,7 @@ struct Zone
 
     void triangulate()
     {
-        std::vector<Point> sPoints(points.cbegin(), points.cend());
+        std::vector<Eigen::Vector2f> sPoints(points.cbegin(), points.cend());
         Incremental sInc(sPoints);
         triangles = sInc.triangulate();
 
@@ -146,10 +147,10 @@ struct Zone
 
     Edge getBottomEdge(const Zone& aZone)
     {
-        auto sGetSortedOtherWay = [](std::set<Point>::const_iterator cbegin, std::set<Point>::const_iterator cend)
+        auto sGetSortedOtherWay = [](std::set<Eigen::Vector2f>::const_iterator cbegin, std::set<Eigen::Vector2f>::const_iterator cend)
         { 
-            std::vector<Point> sPoints(cbegin, cend);
-            std::sort(sPoints.begin(), sPoints.end(), [](const Point& p1, const Point& p2) { return p1.y > p2.y; }); 
+            std::vector<Eigen::Vector2f> sPoints(cbegin, cend);
+            std::sort(sPoints.begin(), sPoints.end(), [](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) { return p1.y() > p2.y(); }); 
             return sPoints; 
         }; 
 
@@ -208,14 +209,14 @@ struct Zone
         const auto& sOwnPoint = *points.cbegin();
         const auto& sOtherZonePoint = *aZone.points.cbegin();
         
-        if (sOwnPoint.x < sOtherZonePoint.x)
+        if (sOwnPoint.x() < sOtherZonePoint.x())
             return true;
         else
             return false;
     }
 
     // слева нам нужно считать /_ угол, а справа _\, поэтому без параметра указывающего какая зона относительно соединения рассматривается увы не обойтись
-    std::optional<Point> getBestCandidate(const Edge& aEdge, bool aIsLeftZone)  
+    std::optional<Eigen::Vector2f> getBestCandidate(const Edge& aEdge, bool aIsLeftZone)  
     {
         std::vector<Edge> sEdges;
         std::copy_if(edges.begin(), edges.end(), std::back_inserter(sEdges), [aEdge](const Edge& e) { return e.hasCommonPoint(aEdge); });
@@ -226,13 +227,13 @@ struct Zone
         const auto& sCommonPoint = sEdges.begin()->getCommonPoint(aEdge);
         const auto& sNotFromZonePoint = aEdge.getNotCommonPoint(*sEdges.begin());
 
-        std::vector<Point> sPoints;
+        std::vector<Eigen::Vector2f> sPoints;
         std::transform(sEdges.begin(), sEdges.end(), std::back_inserter(sPoints), [aEdge](const Edge& e) { return e.getNotCommonPoint(aEdge); });
 
         if (sPoints.size() == 1)
             return *sPoints.begin();
  
-        std::sort(sPoints.begin(), sPoints.end(), [sCommonPoint, sNotFromZonePoint, aIsLeftZone](const Point& p1, const Point& p2) {
+        std::sort(sPoints.begin(), sPoints.end(), [sCommonPoint, sNotFromZonePoint, aIsLeftZone](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) {
             const auto& sInnerEdge1 = Edge(sCommonPoint, p1);
             const auto& sInnerEdge2 = Edge(sCommonPoint, p2);
             const auto& sOuterEdge = Edge(sNotFromZonePoint, sCommonPoint);
@@ -242,7 +243,7 @@ struct Zone
                 return sOuterEdge.clockwiseAngle(sInnerEdge1) < sOuterEdge.clockwiseAngle(sInnerEdge2);
         });
 
-        std::erase_if(sPoints, [sCommonPoint, sNotFromZonePoint, aIsLeftZone](const Point& p) {
+        std::erase_if(sPoints, [sCommonPoint, sNotFromZonePoint, aIsLeftZone](const Eigen::Vector2f& p) {
             const auto& sOuterEdge = Edge(sCommonPoint, sNotFromZonePoint);
             const auto& sInnerEdge = Edge(sCommonPoint, p);
             double sAngle = 0.0;

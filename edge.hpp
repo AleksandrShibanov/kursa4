@@ -5,23 +5,24 @@
 #include <vector>
 #include <boost/functional/hash.hpp>
 #include <optional>
-
-#include "point.hpp"
+#include <Eigen/Dense>
 
 constexpr double PI = 3.141592653589793238463;
 
 struct Edge 
 {
-    Point p1;
-    Point p2;
+    Eigen::Vector2f p1;
+    Eigen::Vector2f p2;
     bool bad = false;
 
     Edge() = default;
-    Edge(const Point& p1, const Point& p2);
+    Edge(const Eigen::Vector2f& p1, const Eigen::Vector2f& p2);
 
-    double distance(const Point& p) const;
+    double distance(const Eigen::Vector2f& p) const;
 
-    double length();
+    double length() const;
+
+    double cross(const Edge& edge) const;
 
     void MakeBad();
 
@@ -29,18 +30,18 @@ struct Edge
 
     bool isBad();
 
-    double degree(const Edge& edge) const;
-
     bool hasCommonPoint(const Edge& edge) const;
-    Point getCommonPoint(const Edge& edge) const;
-    Point getNotCommonPoint(const Edge& edge) const;
+    Eigen::Vector2f getCommonPoint(const Edge& edge) const;
+    Eigen::Vector2f getNotCommonPoint(const Edge& edge) const;
 
-    std::pair<Point, Point> getPointsOrderedByX() const;
-    std::pair<Point, Point> getPointsOrderedByY() const;
+    std::pair<Eigen::Vector2f, Eigen::Vector2f> getPointsOrderedByX() const;
+    std::pair<Eigen::Vector2f, Eigen::Vector2f> getPointsOrderedByY() const;
 
     double clockwiseAngle(const Edge& aEdge) const;
 
-    std::optional<Point> isIntersects(const Edge& aEdge) const;
+    std::optional<Eigen::Vector2f> isIntersects(const Edge& aEdge) const;
+
+    std::pair<double, double> getVector() const;
 
     bool operator ==(const Edge& rhs) const;
 
@@ -48,35 +49,8 @@ struct Edge
 
     friend std::ostream &operator<<(std::ostream &os, const Edge &edge)
     {
-        os << "X1: " << edge.p1.x << " Y1: " << edge.p1.y << std::endl;
-        os << "X2: " << edge.p2.x << " Y2: " << edge.p2.y << std::endl;
+        os << "X1: " << edge.p1.x() << " Y1: " << edge.p1.y() << std::endl;
+        os << "X2: " << edge.p2.x() << " Y2: " << edge.p2.y() << std::endl;
         return os;
-    }
-};
-
-template <class T>
-class MyHash;
-
-template<>
-struct MyHash<Edge>
-{
-    std::size_t operator()(const Edge& sEdge) const 
-    {
-        std::size_t res = 0;
-        if (sEdge.p1 < sEdge.p2)
-        {
-            boost::hash_combine(res, sEdge.p1.x);
-            boost::hash_combine(res, sEdge.p1.y);
-            boost::hash_combine(res, sEdge.p2.x);
-            boost::hash_combine(res, sEdge.p2.y);
-        }
-        else 
-        {
-            boost::hash_combine(res, sEdge.p2.x);
-            boost::hash_combine(res, sEdge.p2.y);
-            boost::hash_combine(res, sEdge.p1.x);
-            boost::hash_combine(res, sEdge.p1.y);
-        }
-        return res;
     }
 };

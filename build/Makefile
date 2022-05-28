@@ -150,33 +150,6 @@ Edge.cpp.s:
 	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/Edge.cpp.s
 .PHONY : Edge.cpp.s
 
-Point.o: Point.cpp.o
-
-.PHONY : Point.o
-
-# target to build an object file
-Point.cpp.o:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/Point.cpp.o
-.PHONY : Point.cpp.o
-
-Point.i: Point.cpp.i
-
-.PHONY : Point.i
-
-# target to preprocess a source file
-Point.cpp.i:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/Point.cpp.i
-.PHONY : Point.cpp.i
-
-Point.s: Point.cpp.s
-
-.PHONY : Point.s
-
-# target to generate assembly for a file
-Point.cpp.s:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/Point.cpp.s
-.PHONY : Point.cpp.s
-
 incremental.o: incremental.cpp.o
 
 .PHONY : incremental.o
@@ -270,9 +243,6 @@ help:
 	@echo "... Edge.o"
 	@echo "... Edge.i"
 	@echo "... Edge.s"
-	@echo "... Point.o"
-	@echo "... Point.i"
-	@echo "... Point.s"
 	@echo "... incremental.o"
 	@echo "... incremental.i"
 	@echo "... incremental.s"

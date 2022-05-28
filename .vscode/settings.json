@@ -1,4 +1,5 @@
 {
+    "editor.fontFamily": "Ubuntu Mono",
     "C_Cpp.errorSquiggles": "Disabled",
     "files.associations": {
         "array": "cpp",
@@ -75,6 +76,7 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "typeindex": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "dense": "cpp"
     }
 }

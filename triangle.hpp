@@ -1,18 +1,17 @@
 #pragma once
 
 #include <vector>
-#include "point.hpp"
 #include "edge.hpp"
 
 
 struct Triangle {
-    Point A;
-    Point B;
-    Point C;
+    Eigen::Vector2f A;
+    Eigen::Vector2f B;
+    Eigen::Vector2f C;
     std::vector<Edge> edges;
     bool bad = false;
 
-    Triangle(const Point& A, const Point& B, const Point& C);
+    Triangle(const Eigen::Vector2f& A, const Eigen::Vector2f& B, const Eigen::Vector2f& C);
 
     bool hasCommonEdge(const Triangle &triangle) const;
 
@@ -23,11 +22,11 @@ struct Triangle {
 
     bool isBad() ;
 
-    Point getPoint(const Edge& edge);
+    Eigen::Vector2f getPoint(const Edge& edge);
 
-    bool containsPoint(const Point& v) const;
+    bool containsPoint(const Eigen::Vector2f& v) const;
 
-    bool circumscribedCircleContains(const Point& D) const ;
+    bool circumscribedCircleContains(const Eigen::Vector2f& D) const ;
 
     bool operator ==(const Triangle& rhs) const ;
 
