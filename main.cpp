@@ -52,8 +52,8 @@ int main() {
 
     std::random_device rd;
     std::mt19937 gen_for_double(rd());
-    std::uniform_real_distribution<> height_gen(0.11, 0.89);
-    std::uniform_real_distribution<> width_gen(0.11, 0.89);
+    std::uniform_real_distribution<> height_gen(0.0, 1.0);
+    std::uniform_real_distribution<> width_gen(0.0, 1.0);
 
     std::set<Eigen::Vector2f, vecCompare> sPoints;
     // readDump(sPoints);
@@ -86,7 +86,7 @@ int main() {
     
     std::vector<Zone> sMergeZones;
     #pragma omp parallel for
-    for (size_t j = 0; j < sZonesCount; j += 2)
+    for (size_t j = 0; j < sZonesCount-1; j += 2)
     {
         std::cout << "merging " << j << " |= " << j + 1 << " zones" << std::endl;
         sMergeZones.emplace_back(sZones[j] |= sZones[j + 1]);

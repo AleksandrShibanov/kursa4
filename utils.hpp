@@ -10,17 +10,18 @@
 constexpr double HEIGHT = 900.0;
 constexpr double WIDTH = 1600.0;
 
-constexpr uint8_t gNumberOfThreads = 4;
+constexpr uint8_t gNumberOfThreads = 8;
 
-constexpr size_t N = 1000;  // number of points
-constexpr size_t sZonesCount = 8;  // number of parallel calculated triangulation 'bricks'
+constexpr size_t N = 10000;  // number of points
+constexpr size_t sZonesCount = 1;  // number of parallel calculated triangulation 'bricks'
 
-constexpr size_t MAX_ITERATIONS = 300;
-constexpr double SPLIT = 0.05;
+constexpr size_t MAX_ITERATIONS = 10000;
+constexpr size_t MAX_MERGE_ITERATIONS = 150;
+constexpr double SPLIT = 0.03;
 
 constexpr float ADF_PRECISION = 1e-7;
 constexpr float INC_PRECISION = 1e-15;
-constexpr float MERGE_PRECISION = 1e-10;
+constexpr float MERGE_PRECISION = 1e-30;
 
 
 template <class T>

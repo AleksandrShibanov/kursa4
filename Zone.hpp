@@ -62,16 +62,16 @@ struct Zone
         sADF.splitFront(SPLIT);
         triangles = sADF.triangulate();
 
-        std::set<Eigen::Vector2f, vecCompare> sPoints;
-        for (const auto& tr: triangles)
-        {
-            sPoints.insert(tr.A);
-            sPoints.insert(tr.B);
-            sPoints.insert(tr.C);
-        }
-        std::vector<Eigen::Vector2f> sBuf(sPoints.begin(), sPoints.end());
-        Incremental sInc(sBuf);
-        triangles = sInc.triangulate();
+        // std::set<Eigen::Vector2f, vecCompare> sPoints;
+        // for (const auto& tr: triangles)
+        // {
+        //     sPoints.insert(tr.A);
+        //     sPoints.insert(tr.B);
+        //     sPoints.insert(tr.C);
+        // }
+        // std::vector<Eigen::Vector2f> sBuf(sPoints.begin(), sPoints.end());
+        // Incremental sInc(sBuf);
+        // triangles = sInc.triangulate();
 
         for (const auto& sTriangle: triangles)
         {
@@ -105,7 +105,7 @@ struct Zone
         auto sLeftBestCandidate = getBestCandidate(sLR_Edge, true);
         auto sRightBestCandidate = aZone.getBestCandidate(sLR_Edge, false);
 
-        while (sLeftBestCandidate.has_value() || sRightBestCandidate.has_value())
+        for (size_t i = 0; i < MAX_MERGE_ITERATIONS && (sLeftBestCandidate.has_value() || sRightBestCandidate.has_value()); ++i)
         {
             const auto& [sLeftPointOfLR_Edge, sRightPointOfLR_Edge] = sLR_Edge.getPointsOrderedByX();
 
@@ -258,7 +258,7 @@ struct Zone
                 sAngle = sInnerEdge.clockwiseAngle(sOuterEdge);
             else
                 sAngle = sOuterEdge.clockwiseAngle(sInnerEdge);
-            return sAngle < 0.01;
+            return sAngle < 1e-3;
         });
 
         if (sPoints.empty())
