@@ -7,7 +7,21 @@
 #include <optional>
 #include <Eigen/Dense>
 
-constexpr float PRECISION = 1e-5;
+constexpr double HEIGHT = 900.0;
+constexpr double WIDTH = 1600.0;
+
+constexpr uint8_t gNumberOfThreads = 4;
+
+constexpr size_t N = 1000;  // number of points
+constexpr size_t sZonesCount = 8;  // number of parallel calculated triangulation 'bricks'
+
+constexpr size_t MAX_ITERATIONS = 300;
+constexpr double SPLIT = 0.05;
+
+constexpr float ADF_PRECISION = 1e-7;
+constexpr float INC_PRECISION = 1e-15;
+constexpr float MERGE_PRECISION = 1e-10;
+
 
 template <class T>
 class MyHash;
@@ -38,6 +52,10 @@ struct MyHash<Edge>
 
 struct vecCompare {
     bool operator() (Eigen::Vector2f v, Eigen::Vector2f w) const {
+        Eigen::Vector2f b(v.x()-w.x(), v.y()-w.y());
+        Eigen::Vector2f zero(0.0, 0.0);
+        if (b.isApprox(zero, ADF_PRECISION))
+            return false;
         for (int i = 0; i < 2; ++i) {
             if (v(i) < w(i)) return true;
             if (v(i) > w(i)) return false;
@@ -46,3 +64,9 @@ struct vecCompare {
         return false;
     }
 };
+
+template<class Container>
+auto sinserter(Container& c){
+    using std::end;
+    return std::inserter(c, end(c));
+}

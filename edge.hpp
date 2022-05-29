@@ -13,10 +13,11 @@ struct Edge
 {
     Eigen::Vector2f p1;
     Eigen::Vector2f p2;
+    float precision = 0.0;
     bool bad = false;
 
     Edge() = default;
-    Edge(const Eigen::Vector2f& p1, const Eigen::Vector2f& p2);
+    Edge(const Eigen::Vector2f& p1, const Eigen::Vector2f& p2, float precision);
 
     double distance(const Eigen::Vector2f& p) const;
 
@@ -47,8 +48,11 @@ struct Edge
 
     bool operator !=(const Edge &rhs) const;
 
+    bool operator <(const Edge &rhs) const;
+
     friend std::ostream &operator<<(std::ostream &os, const Edge &edge)
     {
+        os << "Edge:" << std::endl;
         os << "X1: " << edge.p1.x() << " Y1: " << edge.p1.y() << std::endl;
         os << "X2: " << edge.p2.x() << " Y2: " << edge.p2.y() << std::endl;
         return os;

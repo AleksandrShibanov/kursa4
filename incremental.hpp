@@ -15,6 +15,7 @@
 
 struct Incremental {
     std::vector<Eigen::Vector2f> points;
+    std::vector<Eigen::Vector2f> processed;
 
 
     explicit Incremental(std::vector<Eigen::Vector2f>& points);

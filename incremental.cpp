@@ -15,30 +15,37 @@ Incremental::Incremental(std::vector<Eigen::Vector2f>& points): points(points) {
 
 Triangle Incremental::createBigTriangle(Eigen::Vector2f& p1_1, Eigen::Vector2f& p2_1, Eigen::Vector2f& p3_1) {
 
-    auto mmx = std::minmax_element(points.begin(), points.end(), [](  Eigen::Vector2f& p1,   Eigen::Vector2f& p2) {
-        return p1.x() < p2.x();
-    });
+    // auto mmx = std::minmax_element(points.begin(), points.end(), [](  Eigen::Vector2f& p1,   Eigen::Vector2f& p2) {
+    //     return p1.x() < p2.x();
+    // });
 
-    auto mmy = std::minmax_element(points.begin(), points.end(), [](  Eigen::Vector2f& p1,   Eigen::Vector2f& p2) {
-        return p1.y() < p2.y();
-    });
+    // auto mmy = std::minmax_element(points.begin(), points.end(), [](  Eigen::Vector2f& p1,   Eigen::Vector2f& p2) {
+    //     return p1.y() < p2.y();
+    // });
 
-    double min_x = mmx.first->x();
-    double max_x = mmx.second->x();
-    double min_y = mmy.first->y();
-    double max_y = mmy.second->y();
+    // double min_x = mmx.first->x();
+    // double max_x = mmx.second->x();
+    // double min_y = mmy.first->y();
+    // double max_y = mmy.second->y();
 
-    double dx = max_x - min_x;
-    double dy = max_y - min_y;
-    double deltaMax = std::max(dx, dy);
-    double midX = 0.5 * (min_x + max_x);
-    double midY = 0.5 * (min_y + max_y);
+    // double dx = max_x - min_x;
+    // double dy = max_y - min_y;
+    // double deltaMax = std::max(dx, dy);
+    // double midX = 0.5 * (min_x + max_x);
+    // double midY = 0.5 * (min_y + max_y);
 
-    Eigen::Vector2f p1(midX - 20 * deltaMax, midY - deltaMax);
+    // Eigen::Vector2f p1(midX - 20 * deltaMax, midY - deltaMax);
+    // p1_1 = p1;
+    // Eigen::Vector2f p2(midX, midY + 20 * deltaMax);
+    // p2_1 = p2;
+    // Eigen::Vector2f p3(midX + 20 * deltaMax, midY - deltaMax);
+    // p3_1 = p3;
+  
+    Eigen::Vector2f p1(0.0, 0.0);  // normalized data coordinates from 0 to 1 so i can just hardcore coords of big tr
     p1_1 = p1;
-    Eigen::Vector2f p2(midX, midY + 20 * deltaMax);
+    Eigen::Vector2f p2(0.0, 2.0);
     p2_1 = p2;
-    Eigen::Vector2f p3(midX + 20 * deltaMax, midY - deltaMax);
+    Eigen::Vector2f p3(2.0, 0.0);
     p3_1 = p3;
     return Triangle(p1, p2, p3);
 }
@@ -49,9 +56,9 @@ void insert(const Eigen::Vector2f& point, std::vector<Triangle>& triangles) {
     for (auto it = triangles.begin(); it != triangles.end(); ++it) {
         if (it->circumscribedCircleContains(point)) {
             it->MakeBad();
-            polygon.push_back(Edge(it->A, it->B));
-            polygon.push_back(Edge(it->B, it->C));
-            polygon.push_back(Edge(it->C, it->A));
+            polygon.push_back(Edge(it->A, it->B, INC_PRECISION));
+            polygon.push_back(Edge(it->B, it->C, INC_PRECISION));
+            polygon.push_back(Edge(it->C, it->A, INC_PRECISION));
         }
     }
 
@@ -78,22 +85,25 @@ void insert(const Eigen::Vector2f& point, std::vector<Triangle>& triangles) {
     }
 }
 
-
+#include <iostream>
 std::vector<Triangle> Incremental::triangulate() {
 
     Eigen::Vector2f p1, p2, p3;
     Triangle bigTriangle = createBigTriangle(p1, p2, p3);
     std::vector<Triangle> triangles{bigTriangle};
-
+    size_t i = 0;
     for (const auto &point : points) {
+        std::cout << "iteration " << i << std::endl;
+        ++i;
+
         std::vector<Edge> polygon;
 
         for (auto it = triangles.begin(); it != triangles.end(); ++it) {
             if (it->circumscribedCircleContains(point)) {
                 it->MakeBad();
-                polygon.push_back(Edge(it->A, it->B));
-                polygon.push_back(Edge(it->B, it->C));
-                polygon.push_back(Edge(it->C, it->A));
+                polygon.push_back(Edge(it->A, it->B, INC_PRECISION));
+                polygon.push_back(Edge(it->B, it->C, INC_PRECISION));
+                polygon.push_back(Edge(it->C, it->A, INC_PRECISION));
             }
         }
 
@@ -118,6 +128,8 @@ std::vector<Triangle> Incremental::triangulate() {
         for(auto& edge : polygon){
             triangles.push_back(Triangle{edge.p1, edge.p2, point});
         }
+
+        processed.push_back(point);
     }
     triangles.erase(std::remove_if(begin(triangles), end(triangles), [p1, p2, p3](Triangle& t){
         return t.containsPoint(p1) || t.containsPoint(p2) || t.containsPoint(p3);
@@ -125,9 +137,9 @@ std::vector<Triangle> Incremental::triangulate() {
 
     for(auto t : triangles)
     {
-        t.edges.push_back(Edge(t.A, t.B));
-        t.edges.push_back(Edge(t.B, t.C));
-        t.edges.push_back(Edge(t.C, t.A));
+        t.edges.push_back(Edge(t.A, t.B, INC_PRECISION));
+        t.edges.push_back(Edge(t.B, t.C, INC_PRECISION));
+        t.edges.push_back(Edge(t.C, t.A, INC_PRECISION));
     }
 
     return triangles;
@@ -150,9 +162,9 @@ std::vector<Triangle> Incremental::triangulate(std::vector<Triangle>& triangles)
     for(auto t : triangles)
     {
         t.edges.clear();
-        t.edges.push_back(Edge(t.A, t.B));
-        t.edges.push_back(Edge(t.B, t.C));
-        t.edges.push_back(Edge(t.C, t.A));
+        t.edges.push_back(Edge(t.A, t.B, INC_PRECISION));
+        t.edges.push_back(Edge(t.B, t.C, INC_PRECISION));
+        t.edges.push_back(Edge(t.C, t.A, INC_PRECISION));
     }
 
     return triangles;
@@ -172,9 +184,9 @@ std::vector<Triangle> Incremental::triangulate(Eigen::Vector2f &p, std::vector<T
     for(auto t : triangles)
     {
         t.edges.clear();
-        t.edges.push_back(Edge(t.A, t.B));
-        t.edges.push_back(Edge(t.B, t.C));
-        t.edges.push_back(Edge(t.C, t.A));
+        t.edges.push_back(Edge(t.A, t.B, INC_PRECISION));
+        t.edges.push_back(Edge(t.B, t.C, INC_PRECISION));
+        t.edges.push_back(Edge(t.C, t.A, INC_PRECISION));
     }
 
     return triangles;

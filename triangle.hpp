@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "edge.hpp"
+#include "utils.hpp"
 
 
 struct Triangle {
@@ -28,9 +29,9 @@ struct Triangle {
 
     bool circumscribedCircleContains(const Eigen::Vector2f& D) const ;
 
-    bool operator ==(const Triangle& rhs) const ;
+    // bool operator ==(const Triangle& rhs) const ;
 
-    bool operator !=(const Triangle& rhs) const;
+    // bool operator !=(const Triangle& rhs) const;
 
     bool containsEdge(const Edge &edge) const;
 };

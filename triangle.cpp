@@ -4,10 +4,9 @@
 #include "edge.hpp"
 
 Triangle::Triangle(const Eigen::Vector2f& A, const Eigen::Vector2f& B, const Eigen::Vector2f& C) : A(A), B(B), C(C) {
-    edges.clear();
-    edges.push_back({A, B});
-    edges.push_back({B, C});
-    edges.push_back({C, A});
+    edges.push_back({A, B, INC_PRECISION});
+    edges.push_back({B, C, INC_PRECISION});
+    edges.push_back({C, A, INC_PRECISION});
 }
 
 bool Triangle::hasCommonEdge(const Triangle &triangle) const 
@@ -64,7 +63,7 @@ bool Triangle::isBad()
 
 bool Triangle::containsPoint(const Eigen::Vector2f& v) const 
 {
-    return v == A || v == B || v == C;
+    return v.isApprox(A, INC_PRECISION) || v.isApprox(B, INC_PRECISION)  || v.isApprox(C, INC_PRECISION);
 }
 
 bool Triangle::containsEdge(const Edge& edge) const 
@@ -97,14 +96,14 @@ bool Triangle::circumscribedCircleContains(const Eigen::Vector2f& D) const
            hypot(A.x() - circum.x(), A.y() - circum.y()) * hypot(A.x() - circum.x(), A.y() - circum.y());
 }
 
-bool Triangle::operator ==(const Triangle& rhs) const 
-{
-    return (A == rhs.A && B == rhs.B && C == rhs.C) ||
-            (A == rhs.B && B == rhs.C && C == rhs.A) ||
-            (A == rhs.C && B == rhs.A && C == rhs.B);
-}
+// bool Triangle::operator ==(const Triangle& rhs) const 
+// {
+//     return (A == rhs.A && B == rhs.B && C == rhs.C) ||
+//             (A == rhs.B && B == rhs.C && C == rhs.A) ||
+//             (A == rhs.C && B == rhs.A && C == rhs.B);
+// }
 
-bool Triangle::operator !=(const Triangle& rhs) const 
-{
-    return !(rhs == *this);
-}
+// bool Triangle::operator !=(const Triangle& rhs) const 
+// {
+//     return !(rhs == *this);
+// }

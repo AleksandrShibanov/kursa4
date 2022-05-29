@@ -57,11 +57,11 @@ struct ccwSorter {
 
 bool isGreaterByLen(const Edge& aFrontEdge, const Eigen::Vector2f& aPoint1, const Eigen::Vector2f& aPoint2)  // p1 > p2
 {
-    Edge e11(aFrontEdge.p1, aPoint1);
-    Edge e21(aFrontEdge.p2, aPoint1);
+    Edge e11(aFrontEdge.p1, aPoint1, ADF_PRECISION);
+    Edge e21(aFrontEdge.p2, aPoint1, ADF_PRECISION);
 
-    Edge e12(aFrontEdge.p1, aPoint2);
-    Edge e22(aFrontEdge.p2, aPoint2);
+    Edge e12(aFrontEdge.p1, aPoint2, ADF_PRECISION);
+    Edge e22(aFrontEdge.p2, aPoint2, ADF_PRECISION);
 
     return e11.length()*e11.length()+e21.length()*e21.length() > e12.length()*e12.length()+e22.length()*e22.length();
 }
@@ -72,6 +72,7 @@ struct ADF
     private:
     std::set<Eigen::Vector2f, vecCompare> points;
     std::vector<Edge> edges;
+    std::vector<Triangle> triangles;
     std::deque<Edge> front;
 
     public:
@@ -84,15 +85,15 @@ struct ADF
         auto sPrev = sPoints.begin();
         for (auto it = std::next(sPoints.begin()); it != sPoints.end(); ++it)
         {
-            front.emplace_back(*sPrev, *it);
+            front.emplace_back(*sPrev, *it, ADF_PRECISION);
             sPrev = it;
         }
 
         // 2 points in sPoints we do not consider, this means something went bad, so just push without check >2
-        front.emplace_back(*std::prev(sPoints.end()), *sPoints.begin());
+        front.emplace_back(*std::prev(sPoints.end()), *sPoints.begin(), ADF_PRECISION);
     }
 
-    void splitFront(uint64_t aSplitSize)
+    void splitFront(double aSplitSize)
     {
         auto sInitFrontSize = front.size();
         for (size_t i = 0; i < sInitFrontSize; ++i)
@@ -112,55 +113,56 @@ struct ADF
                 double deltaY = (sPointTo.y() - sPointFrom.y())/(iterations);
                 startPoint = Eigen::Vector2f(sPointFrom.x()+deltaX*j, sPointFrom.y()+deltaY*j);
                 endPoint = Eigen::Vector2f(sPointFrom.x()+deltaX*(j+1), sPointFrom.y()+deltaY*(j+1));
-                front.emplace_back(startPoint, endPoint);
+                front.emplace_back(startPoint, endPoint, ADF_PRECISION);
             }
-
-            if (iterations != 0)
+            
+            if (iterations == 0)
             {
-                front.emplace_back(endPoint, sPointTo);
+                front.emplace_back(sPointFrom, sPointTo, ADF_PRECISION);
             }
-            else
-            {
-                front.emplace_back(sPointFrom, sPointTo);
-            }
-
             
 
         }
     }
 
-    void triangulate()
+    std::vector<Triangle> triangulate()
     {
-        for (int i = 0; i < 1500 && !front.empty(); ++i)
-        //while (!front.empty())
+        for (size_t i = 0; i < MAX_ITERATIONS && !front.empty(); ++i)  // for debug
+        // for (int i = 0; !front.empty(); ++i)
         {
             std::cout << "iteration " << i << std::endl;
             auto sFrontEdge = front.front();
             front.pop_front();
 
             auto sPoint = generateFrontEdgePoint(sFrontEdge);
-            Edge e1(sFrontEdge.p1, sPoint);
-            Edge e2(sPoint, sFrontEdge.p2);
+            Edge e1(sFrontEdge.p1, sPoint, ADF_PRECISION);
+            Edge e2(sPoint, sFrontEdge.p2, ADF_PRECISION);
 
             auto sPoints = getFrontPoints();
-            std::erase_if(sPoints, [sFrontEdge](const Eigen::Vector2f& p) { return ccw(sFrontEdge.p1, sFrontEdge.p2, p) > 0; });
-            auto lam = [&sFrontEdge](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) { return isGreaterByLen(sFrontEdge, p2, p1); };
+            std::erase_if(sPoints, [sFrontEdge](const Eigen::Vector2f& p) { 
+                return ccw(sFrontEdge.p1, sFrontEdge.p2, p) > 0 || 
+                       p.isApprox(sFrontEdge.p1, ADF_PRECISION) || 
+                       p.isApprox(sFrontEdge.p2, ADF_PRECISION); 
+            });
+            auto lam = [&sFrontEdge](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) 
+            {
+                return isGreaterByLen(sFrontEdge, p2, p1); 
+            };
             std::set<Eigen::Vector2f, decltype(lam)> sFrontPoints(sPoints.begin(), 
-                                         sPoints.end(), 
-                                         lam);
-
-        
+                                        sPoints.end(), 
+                                        lam);
             for (auto it = sFrontPoints.cbegin(); it != sFrontPoints.end() && (isIntersectsTriangulation(e1) || isIntersectsTriangulation(e2)); ++it)
             {
-                if (it->isApprox(sFrontEdge.p1, PRECISION)  || it->isApprox(sFrontEdge.p2, PRECISION))
-                    continue;
-                e1 = Edge(sFrontEdge.p1, *it);
-                e2 = Edge(*it, sFrontEdge.p2);
+                e1 = Edge(sFrontEdge.p1, *it, ADF_PRECISION);
+                e2 = Edge(*it, sFrontEdge.p2, ADF_PRECISION);
             }
-
 
             pushEdges(sFrontEdge, e1, e2);
         }
+
+        return triangles;
+        // std::vector<Edge> buf(front.begin(), front.end());
+        // return std::make_pair(buf, edges);
     }
 
     std::vector<Edge> getFront() const
@@ -212,8 +214,12 @@ struct ADF
                 continue;
             }
             const auto& sIntersectionPoint = aEdge.isIntersects(sFrontEdge);
-            if (sIntersectionPoint.has_value() && sIntersectionPoint.value() != sFrontEdge.p1 && sIntersectionPoint.value() != sFrontEdge.p2)
+            if (sIntersectionPoint.has_value() && 
+               !sFrontEdge.p1.isApprox(sIntersectionPoint.value(), ADF_PRECISION) && 
+               !sFrontEdge.p2.isApprox(sIntersectionPoint.value(), ADF_PRECISION))
             {
+                // std::cout << "front intersect" << std::endl;
+                // std::cout << sIntersectionPoint.value() << std::endl;
                 return true;
             }
         }
@@ -224,8 +230,13 @@ struct ADF
                 continue;
             }
             const auto& sIntersectionPoint = aEdge.isIntersects(sEdge);
-            if (sIntersectionPoint.has_value() && sIntersectionPoint.value() != sEdge.p1 && sIntersectionPoint.value() != sEdge.p2)
+            if (sIntersectionPoint.has_value() && 
+                !sEdge.p1.isApprox(sIntersectionPoint.value(), ADF_PRECISION) && 
+                !sEdge.p2.isApprox(sIntersectionPoint.value(), ADF_PRECISION))
             {
+                // std::cout << "edges intersect" << std::endl;
+                // std::cout << sEdge << std::endl;
+                // std::cout << sIntersectionPoint.value() << std::endl;
                 return true;
             }
         }
@@ -280,8 +291,8 @@ struct ADF
         {
             front.push_back(aNewEdge2);
         }
-
         edges.push_back(aFrontEdge);
+        triangles.emplace_back(aNewEdge1.p1, aNewEdge1.p2, aNewEdge2.p2);
     }
 
 };

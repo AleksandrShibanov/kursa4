@@ -8,7 +8,9 @@
 #include "utils.hpp"
 
 
-Edge::Edge(const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) : p1(p1.x(), p1.y()), p2(p2.x(), p2.y()) {}
+Edge::Edge(const Eigen::Vector2f& p1, const Eigen::Vector2f& p2, float precision) : p1(p1), p2(p2), precision(precision) {
+    assert(!p1.isApprox(p2, precision));
+}
 
 double Edge::distance(const Eigen::Vector2f& p) const 
 {
@@ -45,17 +47,17 @@ bool Edge::isBad()
 
 bool Edge::hasCommonPoint(const Edge& edge) const 
 {
-    return p1.isApprox(edge.p1, PRECISION) ||
-           p1.isApprox(edge.p2, PRECISION) || 
-           p2.isApprox(edge.p1, PRECISION) || 
-           p2.isApprox(edge.p2, PRECISION);
+    return p1.isApprox(edge.p1, precision) ||
+           p1.isApprox(edge.p2, precision) || 
+           p2.isApprox(edge.p1, precision) || 
+           p2.isApprox(edge.p2, precision);
 }
 
 Eigen::Vector2f Edge::getCommonPoint(const Edge& edge) const
 {
     assert(hasCommonPoint(edge) == true);
 
-    if (p1.isApprox(edge.p1, PRECISION) || p1.isApprox(edge.p2, PRECISION))
+    if (p1.isApprox(edge.p1, precision) || p1.isApprox(edge.p2, precision))
         return p1;
     return p2;
 }
@@ -64,7 +66,7 @@ Eigen::Vector2f Edge::getNotCommonPoint(const Edge& edge) const
 {
     assert(hasCommonPoint(edge) == true);
     
-    if (p1.isApprox(edge.p1, PRECISION) || p1.isApprox(edge.p2, PRECISION))
+    if (p1.isApprox(edge.p1, precision) || p1.isApprox(edge.p2, precision))
         return p2;
     return p1;
 }
@@ -87,9 +89,9 @@ std::pair<Eigen::Vector2f, Eigen::Vector2f> Edge::getPointsOrderedByY() const
 
 bool Edge::operator==(const Edge& rhs) const 
 {
-    return (p1.isApprox(rhs.p1, PRECISION) && p2.isApprox(rhs.p2, PRECISION)) 
+    return (p1.isApprox(rhs.p1, precision) && p2.isApprox(rhs.p2, precision)) 
             || 
-            (p1.isApprox(rhs.p2, PRECISION) && p2.isApprox(rhs.p1, PRECISION)) ;
+            (p1.isApprox(rhs.p2, precision) && p2.isApprox(rhs.p1, precision)) ;
 }
 
 bool Edge::operator !=(const Edge &rhs) const 
@@ -97,9 +99,16 @@ bool Edge::operator !=(const Edge &rhs) const
     return !(rhs == *this);
 }
 
+bool Edge::operator <(const Edge &rhs) const 
+{
+    vecCompare cmp;
+    if (cmp(p1, rhs.p1)) return true;
+    return false;
+}
+
 // Returns 1 if the lines intersect, otherwise 0. In addition, if the lines 
 // intersect the intersection point may be stored.
-std::optional<Eigen::Vector2f> Edge::isIntersects(const Edge& aEdge) const  // код из интернетов
+std::optional<Eigen::Vector2f> Edge::isIntersects(const Edge& aEdge) const 
 {
     double s02_x, s02_y, s10_x, s10_y, s32_x, s32_y, s_numer, t_numer, denom, t;
     s10_x = p2.x() - p1.x();
@@ -108,7 +117,7 @@ std::optional<Eigen::Vector2f> Edge::isIntersects(const Edge& aEdge) const  // �
     s32_y = aEdge.p2.y() - aEdge.p1.y();
 
     denom = s10_x * s32_y - s32_x * s10_y;
-    if (std::fabs(denom) < PRECISION)
+    if (std::fabs(denom) < precision)
         return std::nullopt; // Collinear
     bool denomPositive = denom > 0;
 

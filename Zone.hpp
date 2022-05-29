@@ -11,6 +11,7 @@
 #include "edge.hpp"
 #include "incremental.hpp"
 #include "utils.hpp"
+#include "adf.hpp"
 
 
 struct Zone
@@ -54,20 +55,22 @@ struct Zone
         points.clear();
     }
 
-    void devour(Zone& aZone)
+    auto triangulate()
     {
-        for (const auto& sTriangle: aZone.triangles)
+        ADF sADF(points);
+        sADF.fillFront();
+        sADF.splitFront(SPLIT);
+        triangles = sADF.triangulate();
+
+        std::set<Eigen::Vector2f, vecCompare> sPoints;
+        for (const auto& tr: triangles)
         {
-            emplace(sTriangle);
+            sPoints.insert(tr.A);
+            sPoints.insert(tr.B);
+            sPoints.insert(tr.C);
         }
-
-        aZone.clear();
-    }
-
-    void triangulate()
-    {
-        std::vector<Eigen::Vector2f> sPoints(points.cbegin(), points.cend());
-        Incremental sInc(sPoints);
+        std::vector<Eigen::Vector2f> sBuf(sPoints.begin(), sPoints.end());
+        Incremental sInc(sBuf);
         triangles = sInc.triangulate();
 
         for (const auto& sTriangle: triangles)
@@ -76,31 +79,25 @@ struct Zone
         }
     }
 
-    void operator +=(Zone& aZone)
+    Zone operator +=(Zone& aZone)
     {
-        merge(aZone);
+        return merge(aZone);
     }
 
-    void operator |=(Zone& aZone)
+    Zone operator |=(Zone& aZone)
     {
-        merge(aZone);
+        return merge(aZone);
     }
 
-    void merge(Zone& aZone)
+    Zone merge(Zone& aZone)
     {
-        if (isLeft(aZone))
-        {
-            mergeImpl(aZone);
-            return;
-        }
-
-        aZone.mergeImpl(*this);
-        devour(aZone);
+        assert(isLeft(aZone));
+        return mergeImpl(aZone);
     }
 
     private:
 
-    void mergeImpl(Zone& aZone)  // здесь this должен быть левее чем переданная зона
+    Zone mergeImpl(Zone& aZone)  // здесь this должен быть левее чем переданная зона
     {
         Zone sMergeZone;
 
@@ -115,12 +112,12 @@ struct Zone
             if (sLeftBestCandidate.has_value() && !sRightBestCandidate.has_value())
             {
                 sMergeZone.emplace(Triangle(sLeftBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
-                sLR_Edge = Edge(sLeftBestCandidate.value(), sRightPointOfLR_Edge);
+                sLR_Edge = Edge(sLeftBestCandidate.value(), sRightPointOfLR_Edge, MERGE_PRECISION);
             }
             else if (!sLeftBestCandidate.has_value() && sRightBestCandidate.has_value())
             {
                 sMergeZone.emplace(Triangle(sRightBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
-                sLR_Edge = Edge(sLeftPointOfLR_Edge, sRightBestCandidate.value());
+                sLR_Edge = Edge(sLeftPointOfLR_Edge, sRightBestCandidate.value(), MERGE_PRECISION);
             }
             else 
             {
@@ -128,12 +125,12 @@ struct Zone
                 if (sLeftTriangle.circumscribedCircleContains(sRightBestCandidate.value()))
                 {
                     sMergeZone.emplace(Triangle(sRightBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
-                    sLR_Edge = Edge(sLeftPointOfLR_Edge, sRightBestCandidate.value());
+                    sLR_Edge = Edge(sLeftPointOfLR_Edge, sRightBestCandidate.value(), MERGE_PRECISION);
                 }
                 else
                 {
                     sMergeZone.emplace(Triangle(sLeftBestCandidate.value(), sLeftPointOfLR_Edge, sRightPointOfLR_Edge));
-                    sLR_Edge = Edge(sLeftBestCandidate.value(), sRightPointOfLR_Edge);
+                    sLR_Edge = Edge(sLeftBestCandidate.value(), sRightPointOfLR_Edge, MERGE_PRECISION);
                 }
             }
             
@@ -141,8 +138,7 @@ struct Zone
             sRightBestCandidate = aZone.getBestCandidate(sLR_Edge, false);
         }
 
-        devour(aZone);
-        devour(sMergeZone);
+        return sMergeZone;
     }
 
     Edge getBottomEdge(const Zone& aZone)
@@ -150,7 +146,13 @@ struct Zone
         auto sGetSortedOtherWay = [](std::set<Eigen::Vector2f>::const_iterator cbegin, std::set<Eigen::Vector2f>::const_iterator cend)
         { 
             std::vector<Eigen::Vector2f> sPoints(cbegin, cend);
-            std::sort(sPoints.begin(), sPoints.end(), [](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) { return p1.y() > p2.y(); }); 
+            std::sort(sPoints.begin(), sPoints.end(), [](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) { 
+                Eigen::Vector2f b(p1.x()-p2.x(), p1.y()-p2.y());
+                Eigen::Vector2f zero(0.0, 0.0);
+                if (b.isApprox(zero, MERGE_PRECISION))
+                    return false;
+                return p1.y() > p2.y(); 
+            }); 
             return sPoints; 
         }; 
 
@@ -164,13 +166,13 @@ struct Zone
 
         while (sOwnCandidateIt != sSortedFromBottomToTop.cend() && sOtherCandidateIt != sOtherZoneSortedFromBottomToTop.cend())
         {
-            sBottomEdge = Edge(*sOwnCandidateIt, *sOtherCandidateIt);
+            sBottomEdge = Edge(*sOwnCandidateIt, *sOtherCandidateIt, MERGE_PRECISION);
             bool sNeedToContinue = false;
 
             for (const auto& sEdge: edges)
             {
                 const auto& sIntersectionPoint = sBottomEdge.isIntersects(sEdge);
-                if (sIntersectionPoint.has_value() && sIntersectionPoint.value() != *sOwnCandidateIt)
+                if (sIntersectionPoint.has_value() && !sIntersectionPoint.value().isApprox(*sOwnCandidateIt, MERGE_PRECISION))
                 {
                     sOwnCandidateIt++;
                     sNeedToContinue = true;  // нужно вернуться континьюить вайл
@@ -184,7 +186,7 @@ struct Zone
             for (const auto& sEdge: aZone.edges)
             {
                 const auto& sIntersectionPoint = sBottomEdge.isIntersects(sEdge);
-                if (sIntersectionPoint.has_value() && sIntersectionPoint.value() != *sOtherCandidateIt)
+                if (sIntersectionPoint.has_value() && !sIntersectionPoint.value().isApprox(*sOtherCandidateIt, MERGE_PRECISION))
                 {
                     sOtherCandidateIt++;
                     sNeedToContinue = true;  // нужно вернуться континьюить вайл
@@ -227,16 +229,21 @@ struct Zone
         const auto& sCommonPoint = sEdges.begin()->getCommonPoint(aEdge);
         const auto& sNotFromZonePoint = aEdge.getNotCommonPoint(*sEdges.begin());
 
-        std::vector<Eigen::Vector2f> sPoints;
-        std::transform(sEdges.begin(), sEdges.end(), std::back_inserter(sPoints), [aEdge](const Edge& e) { return e.getNotCommonPoint(aEdge); });
+        std::set<Eigen::Vector2f, vecCompare> sBufPoints;
+        // for (const auto& sEdge: sEdges)
+        // {
+        //     sPoints.insert(sEdge.getNotCommonPoint(aEdge);
+        // }
+        std::transform(sEdges.begin(), sEdges.end(), sinserter(sBufPoints), [aEdge](const Edge& e) { return e.getNotCommonPoint(aEdge); });
+        std::vector<Eigen::Vector2f> sPoints(sBufPoints.begin(), sBufPoints.end());
 
         if (sPoints.size() == 1)
             return *sPoints.begin();
  
         std::sort(sPoints.begin(), sPoints.end(), [sCommonPoint, sNotFromZonePoint, aIsLeftZone](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) {
-            const auto& sInnerEdge1 = Edge(sCommonPoint, p1);
-            const auto& sInnerEdge2 = Edge(sCommonPoint, p2);
-            const auto& sOuterEdge = Edge(sNotFromZonePoint, sCommonPoint);
+            const auto& sInnerEdge1 = Edge(sCommonPoint, p1, MERGE_PRECISION);
+            const auto& sInnerEdge2 = Edge(sCommonPoint, p2, MERGE_PRECISION);
+            const auto& sOuterEdge = Edge(sNotFromZonePoint, sCommonPoint, MERGE_PRECISION);
             if (aIsLeftZone)
                 return sOuterEdge.clockwiseAngle(sInnerEdge1) > sOuterEdge.clockwiseAngle(sInnerEdge2);
             else
@@ -244,14 +251,14 @@ struct Zone
         });
 
         std::erase_if(sPoints, [sCommonPoint, sNotFromZonePoint, aIsLeftZone](const Eigen::Vector2f& p) {
-            const auto& sOuterEdge = Edge(sCommonPoint, sNotFromZonePoint);
-            const auto& sInnerEdge = Edge(sCommonPoint, p);
+            const auto& sOuterEdge = Edge(sCommonPoint, sNotFromZonePoint, MERGE_PRECISION);
+            const auto& sInnerEdge = Edge(sCommonPoint, p, MERGE_PRECISION);
             double sAngle = 0.0;
             if (aIsLeftZone)
                 sAngle = sInnerEdge.clockwiseAngle(sOuterEdge);
             else
                 sAngle = sOuterEdge.clockwiseAngle(sInnerEdge);
-            return sAngle < 0;
+            return sAngle < 0.01;
         });
 
         if (sPoints.empty())
@@ -263,7 +270,7 @@ struct Zone
             const auto& sCheckTriangle = Triangle(*sCurrentBestCandidateIt, sNotFromZonePoint, sCommonPoint);
             if (sCheckTriangle.circumscribedCircleContains(*it))
             {
-                const auto& sEdgeToDelete = Edge(sCommonPoint, *sCurrentBestCandidateIt);
+                const auto& sEdgeToDelete = Edge(sCommonPoint, *sCurrentBestCandidateIt, MERGE_PRECISION);
                 edges.erase(sEdgeToDelete);
                 std::erase_if(triangles, [sEdgeToDelete](const auto& sTriangle) { return sTriangle.containsEdge(sEdgeToDelete); });
                 
