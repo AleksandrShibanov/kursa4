@@ -70,64 +70,36 @@ CMakeFiles/DelaunayMG.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DelaunayMG.dir/main.cpp.s"
 	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aleksandr/CLionProjects/DelaunayMG/main.cpp -o CMakeFiles/DelaunayMG.dir/main.cpp.s
 
-CMakeFiles/DelaunayMG.dir/incremental.cpp.o: CMakeFiles/DelaunayMG.dir/flags.make
-CMakeFiles/DelaunayMG.dir/incremental.cpp.o: ../incremental.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/DelaunayMG.dir/incremental.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DelaunayMG.dir/incremental.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/incremental.cpp
+CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.o: CMakeFiles/DelaunayMG.dir/flags.make
+CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.o: ../triangulation3D.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.o"
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/triangulation3D.cpp
 
-CMakeFiles/DelaunayMG.dir/incremental.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DelaunayMG.dir/incremental.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aleksandr/CLionProjects/DelaunayMG/incremental.cpp > CMakeFiles/DelaunayMG.dir/incremental.cpp.i
+CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.i"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aleksandr/CLionProjects/DelaunayMG/triangulation3D.cpp > CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.i
 
-CMakeFiles/DelaunayMG.dir/incremental.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DelaunayMG.dir/incremental.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aleksandr/CLionProjects/DelaunayMG/incremental.cpp -o CMakeFiles/DelaunayMG.dir/incremental.cpp.s
-
-CMakeFiles/DelaunayMG.dir/Edge.cpp.o: CMakeFiles/DelaunayMG.dir/flags.make
-CMakeFiles/DelaunayMG.dir/Edge.cpp.o: ../Edge.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/DelaunayMG.dir/Edge.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DelaunayMG.dir/Edge.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/Edge.cpp
-
-CMakeFiles/DelaunayMG.dir/Edge.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DelaunayMG.dir/Edge.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aleksandr/CLionProjects/DelaunayMG/Edge.cpp > CMakeFiles/DelaunayMG.dir/Edge.cpp.i
-
-CMakeFiles/DelaunayMG.dir/Edge.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DelaunayMG.dir/Edge.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aleksandr/CLionProjects/DelaunayMG/Edge.cpp -o CMakeFiles/DelaunayMG.dir/Edge.cpp.s
-
-CMakeFiles/DelaunayMG.dir/triangle.cpp.o: CMakeFiles/DelaunayMG.dir/flags.make
-CMakeFiles/DelaunayMG.dir/triangle.cpp.o: ../triangle.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/DelaunayMG.dir/triangle.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DelaunayMG.dir/triangle.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/triangle.cpp
-
-CMakeFiles/DelaunayMG.dir/triangle.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DelaunayMG.dir/triangle.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aleksandr/CLionProjects/DelaunayMG/triangle.cpp > CMakeFiles/DelaunayMG.dir/triangle.cpp.i
-
-CMakeFiles/DelaunayMG.dir/triangle.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DelaunayMG.dir/triangle.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aleksandr/CLionProjects/DelaunayMG/triangle.cpp -o CMakeFiles/DelaunayMG.dir/triangle.cpp.s
+CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.s"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aleksandr/CLionProjects/DelaunayMG/triangulation3D.cpp -o CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.s
 
 # Object files for target DelaunayMG
 DelaunayMG_OBJECTS = \
 "CMakeFiles/DelaunayMG.dir/main.cpp.o" \
-"CMakeFiles/DelaunayMG.dir/incremental.cpp.o" \
-"CMakeFiles/DelaunayMG.dir/Edge.cpp.o" \
-"CMakeFiles/DelaunayMG.dir/triangle.cpp.o"
+"CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.o"
 
 # External object files for target DelaunayMG
 DelaunayMG_EXTERNAL_OBJECTS =
 
 DelaunayMG: CMakeFiles/DelaunayMG.dir/main.cpp.o
-DelaunayMG: CMakeFiles/DelaunayMG.dir/incremental.cpp.o
-DelaunayMG: CMakeFiles/DelaunayMG.dir/Edge.cpp.o
-DelaunayMG: CMakeFiles/DelaunayMG.dir/triangle.cpp.o
+DelaunayMG: CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.o
 DelaunayMG: CMakeFiles/DelaunayMG.dir/build.make
 DelaunayMG: /usr/lib/llvm-10/lib/libomp.so
 DelaunayMG: /usr/lib/x86_64-linux-gnu/libpthread.so
+DelaunayMG: /usr/lib/x86_64-linux-gnu/libmpfr.so
+DelaunayMG: /usr/lib/x86_64-linux-gnu/libgmp.so
 DelaunayMG: CMakeFiles/DelaunayMG.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable DelaunayMG"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable DelaunayMG"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/DelaunayMG.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

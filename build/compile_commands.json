@@ -1,22 +1,12 @@
 [
 {
   "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
-  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/.. -isystem /usr/include/eigen3  -g   -Wall -Wextra -Wpedantic -Werror -fopenmp=libomp -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/main.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/main.cpp",
+  "command": "/usr/bin/clang++  -DBOOST_ALL_NO_LIB -I/home/aleksandr/CLionProjects/DelaunayMG/.. -isystem /usr/include/eigen3  -g   -Wall -Wextra -Wpedantic -Werror -fopenmp=libomp -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/main.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/main.cpp",
   "file": "/home/aleksandr/CLionProjects/DelaunayMG/main.cpp"
 },
 {
   "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
-  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/.. -isystem /usr/include/eigen3  -g   -Wall -Wextra -Wpedantic -Werror -fopenmp=libomp -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/incremental.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/incremental.cpp",
-  "file": "/home/aleksandr/CLionProjects/DelaunayMG/incremental.cpp"
-},
-{
-  "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
-  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/.. -isystem /usr/include/eigen3  -g   -Wall -Wextra -Wpedantic -Werror -fopenmp=libomp -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/Edge.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/Edge.cpp",
-  "file": "/home/aleksandr/CLionProjects/DelaunayMG/Edge.cpp"
-},
-{
-  "directory": "/home/aleksandr/CLionProjects/DelaunayMG/build",
-  "command": "/usr/bin/clang++   -I/home/aleksandr/CLionProjects/DelaunayMG/.. -isystem /usr/include/eigen3  -g   -Wall -Wextra -Wpedantic -Werror -fopenmp=libomp -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/triangle.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/triangle.cpp",
-  "file": "/home/aleksandr/CLionProjects/DelaunayMG/triangle.cpp"
+  "command": "/usr/bin/clang++  -DBOOST_ALL_NO_LIB -I/home/aleksandr/CLionProjects/DelaunayMG/.. -isystem /usr/include/eigen3  -g   -Wall -Wextra -Wpedantic -Werror -fopenmp=libomp -std=gnu++2a -o CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.o -c /home/aleksandr/CLionProjects/DelaunayMG/triangulation3D.cpp",
+  "file": "/home/aleksandr/CLionProjects/DelaunayMG/triangulation3D.cpp"
 }
 ]

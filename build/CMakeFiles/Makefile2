@@ -74,12 +74,12 @@ clean: CMakeFiles/DelaunayMG.dir/clean
 CMakeFiles/DelaunayMG.dir/all:
 	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/depend
 	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target DelaunayMG"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles --progress-num=1,2,3 "Built target DelaunayMG"
 .PHONY : CMakeFiles/DelaunayMG.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/DelaunayMG.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/DelaunayMG.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/aleksandr/CLionProjects/DelaunayMG/build/CMakeFiles 0
 .PHONY : CMakeFiles/DelaunayMG.dir/rule

@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/clang++
 CXX_FLAGS = -g   -Wall -Wextra -Wpedantic -Werror -fopenmp=libomp -std=gnu++2a
 
-CXX_DEFINES = 
+CXX_DEFINES = -DBOOST_ALL_NO_LIB
 
 CXX_INCLUDES = -I/home/aleksandr/CLionProjects/DelaunayMG/.. -isystem /usr/include/eigen3 
 

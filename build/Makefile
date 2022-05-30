@@ -123,60 +123,6 @@ DelaunayMG/fast:
 	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/build
 .PHONY : DelaunayMG/fast
 
-Edge.o: Edge.cpp.o
-
-.PHONY : Edge.o
-
-# target to build an object file
-Edge.cpp.o:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/Edge.cpp.o
-.PHONY : Edge.cpp.o
-
-Edge.i: Edge.cpp.i
-
-.PHONY : Edge.i
-
-# target to preprocess a source file
-Edge.cpp.i:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/Edge.cpp.i
-.PHONY : Edge.cpp.i
-
-Edge.s: Edge.cpp.s
-
-.PHONY : Edge.s
-
-# target to generate assembly for a file
-Edge.cpp.s:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/Edge.cpp.s
-.PHONY : Edge.cpp.s
-
-incremental.o: incremental.cpp.o
-
-.PHONY : incremental.o
-
-# target to build an object file
-incremental.cpp.o:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/incremental.cpp.o
-.PHONY : incremental.cpp.o
-
-incremental.i: incremental.cpp.i
-
-.PHONY : incremental.i
-
-# target to preprocess a source file
-incremental.cpp.i:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/incremental.cpp.i
-.PHONY : incremental.cpp.i
-
-incremental.s: incremental.cpp.s
-
-.PHONY : incremental.s
-
-# target to generate assembly for a file
-incremental.cpp.s:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/incremental.cpp.s
-.PHONY : incremental.cpp.s
-
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -204,32 +150,32 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/main.cpp.s
 .PHONY : main.cpp.s
 
-triangle.o: triangle.cpp.o
+triangulation3D.o: triangulation3D.cpp.o
 
-.PHONY : triangle.o
+.PHONY : triangulation3D.o
 
 # target to build an object file
-triangle.cpp.o:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/triangle.cpp.o
-.PHONY : triangle.cpp.o
+triangulation3D.cpp.o:
+	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.o
+.PHONY : triangulation3D.cpp.o
 
-triangle.i: triangle.cpp.i
+triangulation3D.i: triangulation3D.cpp.i
 
-.PHONY : triangle.i
+.PHONY : triangulation3D.i
 
 # target to preprocess a source file
-triangle.cpp.i:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/triangle.cpp.i
-.PHONY : triangle.cpp.i
+triangulation3D.cpp.i:
+	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.i
+.PHONY : triangulation3D.cpp.i
 
-triangle.s: triangle.cpp.s
+triangulation3D.s: triangulation3D.cpp.s
 
-.PHONY : triangle.s
+.PHONY : triangulation3D.s
 
 # target to generate assembly for a file
-triangle.cpp.s:
-	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/triangle.cpp.s
-.PHONY : triangle.cpp.s
+triangulation3D.cpp.s:
+	$(MAKE) -f CMakeFiles/DelaunayMG.dir/build.make CMakeFiles/DelaunayMG.dir/triangulation3D.cpp.s
+.PHONY : triangulation3D.cpp.s
 
 # Help Target
 help:
@@ -240,18 +186,12 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... DelaunayMG"
-	@echo "... Edge.o"
-	@echo "... Edge.i"
-	@echo "... Edge.s"
-	@echo "... incremental.o"
-	@echo "... incremental.i"
-	@echo "... incremental.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
-	@echo "... triangle.o"
-	@echo "... triangle.i"
-	@echo "... triangle.s"
+	@echo "... triangulation3D.o"
+	@echo "... triangulation3D.i"
+	@echo "... triangulation3D.s"
 .PHONY : help
 
 
