@@ -28,6 +28,7 @@ struct Triangle {
     bool containsPoint(const Eigen::Vector2f& v) const;
 
     bool circumscribedCircleContains(const Eigen::Vector2f& D) const ;
+    double getDelaunayQualityValue() const ;
 
     // bool operator ==(const Triangle& rhs) const ;
 

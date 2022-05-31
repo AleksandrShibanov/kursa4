@@ -131,6 +131,7 @@ struct ADF
         // for (int i = 0; !front.empty(); ++i)
         {
             std::cout << "iteration " << i << std::endl;
+            std::cout << "front size " << front.size() << std::endl;
             auto sFrontEdge = front.front();
             front.pop_front();
 
@@ -138,23 +139,30 @@ struct ADF
             Edge e1(sFrontEdge.p1, sPoint, ADF_PRECISION);
             Edge e2(sPoint, sFrontEdge.p2, ADF_PRECISION);
 
-            auto sPoints = getFrontPoints();
-            std::erase_if(sPoints, [sFrontEdge](const Eigen::Vector2f& p) { 
-                return ccw(sFrontEdge.p1, sFrontEdge.p2, p) > 0 || 
-                       p.isApprox(sFrontEdge.p1, ADF_PRECISION) || 
-                       p.isApprox(sFrontEdge.p2, ADF_PRECISION); 
-            });
-            auto lam = [&sFrontEdge](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) 
+            if (isIntersectsTriangulation(e1) || isIntersectsTriangulation(e2))
             {
-                return isGreaterByLen(sFrontEdge, p2, p1); 
-            };
-            std::set<Eigen::Vector2f, decltype(lam)> sFrontPoints(sPoints.begin(), 
-                                        sPoints.end(), 
-                                        lam);
-            for (auto it = sFrontPoints.cbegin(); it != sFrontPoints.end() && (isIntersectsTriangulation(e1) || isIntersectsTriangulation(e2)); ++it)
-            {
-                e1 = Edge(sFrontEdge.p1, *it, ADF_PRECISION);
-                e2 = Edge(*it, sFrontEdge.p2, ADF_PRECISION);
+                auto sPoints = getFrontPoints();
+                std::erase_if(sPoints, [sFrontEdge](const Eigen::Vector2f& p) { 
+                    return ccw(sFrontEdge.p1, sFrontEdge.p2, p) > 0 || 
+                        p.isApprox(sFrontEdge.p1, ADF_PRECISION) || 
+                        p.isApprox(sFrontEdge.p2, ADF_PRECISION); 
+                });
+                auto lam = [&sFrontEdge](const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) 
+                {
+                    return isGreaterByLen(sFrontEdge, p2, p1); 
+                };
+                std::set<Eigen::Vector2f, decltype(lam)> sFrontPoints(sPoints.begin(), 
+                                            sPoints.end(), 
+                                            lam);
+                bool sFound = false;
+                for (auto it = sFrontPoints.cbegin(); it != sFrontPoints.end() && (isIntersectsTriangulation(e1) || isIntersectsTriangulation(e2)); ++it)
+                {
+                    e1 = Edge(sFrontEdge.p1, *it, ADF_PRECISION);
+                    e2 = Edge(*it, sFrontEdge.p2, ADF_PRECISION);
+                    sFound = true;
+                }
+
+                if (!sFound) continue;
             }
 
             pushEdges(sFrontEdge, e1, e2);

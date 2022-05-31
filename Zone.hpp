@@ -13,6 +13,22 @@
 #include "utils.hpp"
 #include "adf.hpp"
 
+void writeQuality(std::string aFilename, const std::vector<Triangle>& aTriangles)
+{
+    std::fstream output_fstream;
+
+    output_fstream.open(aFilename, std::ios_base::out);
+    if (!output_fstream.is_open()) {
+        std::cout << "Failed to open " << aFilename << '\n';
+    } else {
+        for (const auto& sTr: aTriangles)
+        {
+            output_fstream << sTr.getDelaunayQualityValue() << std::endl;
+        }
+        std::cout << "Done Writing Quality!" << std::endl;
+    }
+}
+
 
 struct Zone
 {
@@ -61,17 +77,20 @@ struct Zone
         sADF.fillFront();
         sADF.splitFront(SPLIT);
         triangles = sADF.triangulate();
+        writeQuality("adf_quality.txt", triangles);
 
-        // std::set<Eigen::Vector2f, vecCompare> sPoints;
-        // for (const auto& tr: triangles)
-        // {
-        //     sPoints.insert(tr.A);
-        //     sPoints.insert(tr.B);
-        //     sPoints.insert(tr.C);
-        // }
-        // std::vector<Eigen::Vector2f> sBuf(sPoints.begin(), sPoints.end());
-        // Incremental sInc(sBuf);
-        // triangles = sInc.triangulate();
+        std::set<Eigen::Vector2f, vecCompare> sPoints;
+        for (const auto& tr: triangles)
+        {
+            sPoints.insert(tr.A);
+            sPoints.insert(tr.B);
+            sPoints.insert(tr.C);
+        }
+        std::vector<Eigen::Vector2f> sBuf(sPoints.begin(), sPoints.end());
+        // std::vector<Eigen::Vector2f> sBuf(points.begin(), points.end());
+        Incremental sInc(sBuf);
+        triangles = sInc.triangulate();
+        writeQuality("inc_quality.txt", triangles);
 
         for (const auto& sTriangle: triangles)
         {
@@ -79,25 +98,52 @@ struct Zone
         }
     }
 
-    Zone operator +=(Zone& aZone)
+    std::pair<std::vector<Edge>, std::vector<Edge>> fillEdgesByFront()
     {
-        return merge(aZone);
+        ADF sADF(points);
+        sADF.fillFront();
+        sADF.splitFront(SPLIT);
+        sADF.triangulate();
+        auto sFront = sADF.getFront();
+        auto sEdges = sADF.getEdges();
+
+        return std::make_pair(sFront, sEdges);
     }
 
-    Zone operator |=(Zone& aZone)
+    void operator +=(Zone& aZone)
     {
-        return merge(aZone);
+        merge(aZone);
     }
 
-    Zone merge(Zone& aZone)
+    void operator |=(Zone& aZone)
     {
-        assert(isLeft(aZone));
-        return mergeImpl(aZone);
+        merge(aZone);
+    }
+
+    void devour(Zone& aZone)
+    {
+        for (const auto& sTriangle: aZone.triangles)
+        {
+            emplace(sTriangle);
+        }
+        aZone.clear();
+    }
+
+    void merge(Zone& aZone)
+    {
+        if (isLeft(aZone))
+        {
+            mergeImpl(aZone);
+            return ;
+        }
+
+        aZone.mergeImpl(*this);
+        devour(aZone);
     }
 
     private:
 
-    Zone mergeImpl(Zone& aZone)  // здесь this должен быть левее чем переданная зона
+    void mergeImpl(Zone& aZone)  // здесь this должен быть левее чем переданная зона
     {
         Zone sMergeZone;
 
@@ -137,8 +183,8 @@ struct Zone
             sLeftBestCandidate = getBestCandidate(sLR_Edge, true);
             sRightBestCandidate = aZone.getBestCandidate(sLR_Edge, false);
         }
-
-        return sMergeZone;
+        devour(aZone);
+        devour(sMergeZone);
     }
 
     Edge getBottomEdge(const Zone& aZone)

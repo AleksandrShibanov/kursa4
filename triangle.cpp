@@ -96,6 +96,36 @@ bool Triangle::circumscribedCircleContains(const Eigen::Vector2f& D) const
            hypot(A.x() - circum.x(), A.y() - circum.y()) * hypot(A.x() - circum.x(), A.y() - circum.y());
 }
 
+#include <iostream>
+double Triangle::getDelaunayQualityValue() const
+{
+    Edge AB(B, A, INC_PRECISION);
+    Edge BC(C, B, INC_PRECISION);
+    Edge CA(A, C, INC_PRECISION);
+
+    // length of sides be a, b, c
+    auto a = AB.length();
+    auto b = BC.length();
+    auto c = CA.length();
+
+    auto a2 = a*a;
+    auto b2 = b*b;
+    auto c2 = c*c;
+ 
+    // From Cosine law
+    auto angleABC = acos((b2 + c2 - a2)/(2*b*c));
+    auto angleBCA = acos((a2 + c2 - b2)/(2*a*c));
+    auto angleCAB = acos((a2 + b2 - c2)/(2*a*b));
+
+    // std::cout << angleABC + angleBCA + angleCAB << std::endl;
+    // assert(angleABC + angleBCA + angleCAB > 3.14 && angleABC + angleBCA + angleCAB < 3.15);
+
+    auto min = std::min(std::min(angleABC, angleBCA), angleCAB);
+    auto max = std::max(std::max(angleABC, angleBCA), angleCAB);
+
+    return min/max;
+}
+
 // bool Triangle::operator ==(const Triangle& rhs) const 
 // {
 //     return (A == rhs.A && B == rhs.B && C == rhs.C) ||

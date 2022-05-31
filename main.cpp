@@ -52,8 +52,8 @@ int main() {
 
     std::random_device rd;
     std::mt19937 gen_for_double(rd());
-    std::uniform_real_distribution<> height_gen(0.0, 1.0);
-    std::uniform_real_distribution<> width_gen(0.0, 1.0);
+    std::uniform_real_distribution<> height_gen(0.0, 900.0);
+    std::uniform_real_distribution<> width_gen(0.0, 1600.0);
 
     std::set<Eigen::Vector2f, vecCompare> sPoints;
     // readDump(sPoints);
@@ -70,7 +70,7 @@ int main() {
     size_t sIndex = 0;
     for (const auto& sPoint: sPoints)
     {
-        if (1.0 / sZonesCount * (sIndex + 1) < sPoint.x())
+        if (WIDTH / sZonesCount * (sIndex + 1) < sPoint.x())
             sIndex++;
 
         sZones[sIndex].emplace(sPoint);
@@ -78,25 +78,29 @@ int main() {
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
+    std::vector<Edge> sEdges;
+    std::vector<Edge> sFront;
     #pragma omp parallel for
     for (auto& sZone: sZones)
     {
         sZone.triangulate();
+        // auto p = sZone.fillEdgesByFront();
+        // sFront = p.first;
+        // sEdges = p.second;
     }
     
-    std::vector<Zone> sMergeZones;
-    #pragma omp parallel for
-    for (size_t j = 0; j < sZonesCount-1; j += 2)
+    size_t sCurrentCounter = 1;
+    for (size_t i = 0; i < std::log2(sZonesCount); ++i)
     {
-        std::cout << "merging " << j << " |= " << j + 1 << " zones" << std::endl;
-        sMergeZones.emplace_back(sZones[j] |= sZones[j + 1]);
+        std::cout << "ITER " << i << std::endl;
+        #pragma omp parallel for
+        for (size_t j = 0; j < sZonesCount; j += sCurrentCounter * 2)
+        {
+            sZones[j] |= sZones[j + sCurrentCounter];
+        }
+        sCurrentCounter *= 2;
     }
-    #pragma omp parallel for
-    for (size_t j = 1; j < sZonesCount-1; j += 2)
-    {
-        std::cout << "merging " << j << " |= " << j + 1 << " zones" << std::endl;
-        sMergeZones.emplace_back(sZones[j] |= sZones[j + 1]);
-    }
+    // writeQuality("merge_quality.txt", sZones[0].triangles);
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[µs]" << std::endl;
@@ -113,8 +117,7 @@ int main() {
                 window.close();
         }
 
-        sf::Color darkGreyGreen(10, 30, 10, 255);
-        window.clear(darkGreyGreen);
+        window.clear(sf::Color::White);
 
         for (const auto& sZone: sZones)
         {
@@ -122,46 +125,32 @@ int main() {
             {
                 sf::Vertex line[] =
                 {
-                        sf::Vertex(sf::Vector2f(sEdge.p1.x()*WIDTH, sEdge.p1.y()*HEIGHT)),
-                        sf::Vertex(sf::Vector2f(sEdge.p2.x()*WIDTH, sEdge.p2.y()*HEIGHT)),
+                        sf::Vertex(sf::Vector2f(sEdge.p1.x(), sEdge.p1.y()), sf::Color::Black),
+                        sf::Vertex(sf::Vector2f(sEdge.p2.x(), sEdge.p2.y()), sf::Color::Black),
                 };
                 window.draw(line, 2, sf::Lines);
             }
         } 
-
-        for (const auto& sZone: sMergeZones)
+        
+        for (const auto& sEdge: sEdges) 
         {
-            for (const auto& sEdge: sZone.edges) 
+            sf::Vertex line[] =
             {
-                sf::Vertex line[] =
-                {
-                        sf::Vertex(sf::Vector2f(sEdge.p1.x()*WIDTH, sEdge.p1.y()*HEIGHT)),
-                        sf::Vertex(sf::Vector2f(sEdge.p2.x()*WIDTH, sEdge.p2.y()*HEIGHT)),
-                };
-                window.draw(line, 2, sf::Lines);
-            }
-        } 
+                    sf::Vertex(sf::Vector2f(sEdge.p1.x(), sEdge.p1.y()), sf::Color::Green),
+                    sf::Vertex(sf::Vector2f(sEdge.p2.x(), sEdge.p2.y()), sf::Color::Green),
+            };
+            window.draw(line, 2, sf::Lines);
+        }
 
-
-        // for (const auto& sEdge: sEdges) 
-        // {
-        //     sf::Vertex line[] =
-        //     {
-        //             sf::Vertex(sf::Vector2f(sEdge.p1.x(), sEdge.p1.y()), sf::Color::Green),
-        //             sf::Vertex(sf::Vector2f(sEdge.p2.x(), sEdge.p2.y()), sf::Color::Green),
-        //     };
-        //     window.draw(line, 2, sf::Lines);
-        // }
-
-        // for (const auto& sEdge: sFront) 
-        // {
-        //     sf::Vertex line[] =
-        //     {
-        //             sf::Vertex(sf::Vector2f(sEdge.p1.x(), sEdge.p1.y()), sf::Color::Red),
-        //             sf::Vertex(sf::Vector2f(sEdge.p2.x(), sEdge.p2.y()), sf::Color::Red),
-        //     };
-        //     window.draw(line, 2, sf::Lines);
-        // }
+        for (const auto& sEdge: sFront) 
+        {
+            sf::Vertex line[] =
+            {
+                    sf::Vertex(sf::Vector2f(sEdge.p1.x(), sEdge.p1.y()), sf::Color::Red),
+                    sf::Vertex(sf::Vector2f(sEdge.p2.x(), sEdge.p2.y()), sf::Color::Red),
+            };
+            window.draw(line, 2, sf::Lines);
+        }
 
         // for (auto p: sPoints)
         // {

@@ -19,9 +19,7 @@ struct Incremental {
 
 
     explicit Incremental(std::vector<Eigen::Vector2f>& points);
-    Triangle createBigTriangle(Eigen::Vector2f& p1_1, Eigen::Vector2f& p2_1, Eigen::Vector2f& p3_1);
+    std::pair<Triangle, Triangle> createBigTriangle(Eigen::Vector2f& p1_1, Eigen::Vector2f& p2_1, Eigen::Vector2f& p3_1, Eigen::Vector2f& p4_1);
     std::vector<Triangle> triangulate();
-    std::vector<Triangle> triangulate(std::vector<Triangle>& triangles);
-    std::vector<Triangle> triangulate(Eigen::Vector2f& p, std::vector<Triangle>& triangles);
 
 };

@@ -77,6 +77,8 @@
         "thread": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "core": "cpp",
+        "*.ipp": "cpp"
     }
 }
